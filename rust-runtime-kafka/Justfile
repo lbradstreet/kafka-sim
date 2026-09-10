@@ -1,0 +1,64 @@
+set positional-arguments
+set quiet
+
+portable := "--workspace --exclude kr-runtime-io-uring --exclude kr-runtime-ring-uring"
+test_features := "--features kr-runtime/test-support,kr-runtime-io/test-support,kr-runtime-ring/test-support"
+
+# Show the development commands.
+default:
+    @just --list
+
+# Run the complete non-io_uring suite. Extra arguments are nextest name filters.
+test *filters:
+    cargo nextest run {{ portable }} {{ test_features }} "$@"
+
+# Run one portable package. Example: just tp kr-runtime timer
+test-package package *filters:
+    package="$1"; shift; cargo nextest run --package "$package" {{ test_features }} "$@"
+
+# Run one integration-test target. Example: just tt kr-runtime runtime timer
+test-target package target *filters:
+    package="$1"; target="$2"; shift 2; cargo nextest run --package "$package" --test "$target" {{ test_features }} "$@"
+
+# List portable tests, optionally filtered by name.
+list *filters:
+    cargo nextest list {{ portable }} {{ test_features }} "$@"
+
+# Type-check every portable non-benchmark target with test support enabled.
+check:
+    cargo check {{ portable }} {{ test_features }} --all-targets
+
+# Type-check one package and all of its targets.
+check-package package:
+    cargo check --package "$1" {{ test_features }} --all-targets
+
+# Format the workspace while writing code.
+fmt:
+    cargo fmt --all
+
+# Check formatting without changing files.
+fmt-check:
+    cargo fmt --all -- --check
+
+# Lint every portable non-benchmark target with test support enabled.
+clippy:
+    cargo clippy {{ portable }} {{ test_features }} --all-targets -- -D warnings
+
+# Run portable doctests, which nextest intentionally does not execute.
+doctest:
+    cargo test {{ portable }} {{ test_features }} --doc
+
+# Pre-commit portable validation.
+ready: fmt-check clippy doctest test
+
+# Run both Linux io_uring adapter suites explicitly.
+test-uring *filters:
+    cargo nextest run --package kr-runtime-io-uring --package kr-runtime-ring-uring --all-features "$@"
+
+alias t := test
+alias tp := test-package
+alias tt := test-target
+alias c := check
+alias cp := check-package
+alias f := fmt
+alias r := ready

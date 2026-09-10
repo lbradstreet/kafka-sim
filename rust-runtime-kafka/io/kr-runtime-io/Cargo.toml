@@ -1,0 +1,25 @@
+[package]
+name = "kr-runtime-io"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Owned asynchronous I/O contracts and deterministic simulation providers"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+benchmarks = ["dep:criterion"]
+test-support = []
+
+[dependencies]
+criterion = { version = "0.7", optional = true }
+kr-runtime = { path = "../.." }
+kr-shared-bytes = { path = "../../bytes/kr-shared-bytes" }
+
+[[bench]]
+name = "cold_file_overhead"
+harness = false
+required-features = ["benchmarks"]
+
+[lints]
+workspace = true

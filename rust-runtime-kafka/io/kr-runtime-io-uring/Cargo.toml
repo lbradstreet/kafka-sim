@@ -1,0 +1,41 @@
+[package]
+name = "kr-runtime-io-uring"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Linux io_uring provider for kr-runtime-io owned operations"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[target.'cfg(target_os = "linux")'.dependencies]
+kr-runtime-io = { path = "../kr-runtime-io" }
+kr-runtime = { path = "../.." }
+io-uring = "=0.7.13"
+libc = "0.2"
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+criterion = "0.7"
+kr-runtime-io = { path = "../kr-runtime-io", features = ["test-support"] }
+
+[[bench]]
+name = "file_overhead"
+harness = false
+
+[[bench]]
+name = "file_multi_inflight"
+harness = false
+
+[[bench]]
+name = "stream_overhead"
+harness = false
+
+[[bench]]
+name = "stream_many_connections"
+harness = false
+
+[lints.rust]
+unreachable_pub = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+
+[lints.clippy]
+all = "warn"

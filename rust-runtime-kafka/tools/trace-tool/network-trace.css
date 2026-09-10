@@ -1,0 +1,208 @@
+:root {
+  --left-flow: var(--accepted);
+  --right-flow: var(--durable);
+  --byte-fill: color-mix(in oklch, var(--accepted) 24%, var(--muted));
+  --byte-changed: color-mix(in oklch, var(--recovered) 42%, var(--muted));
+}
+
+h3 {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.duplex-transition {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+.flow-snapshot {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: color-mix(in oklch, var(--muted) 38%, transparent);
+}
+
+.flow-snapshot.after {
+  border-color: color-mix(in oklch, var(--selected) 55%, var(--border));
+  box-shadow: inset 0 2px color-mix(in oklch, var(--selected) 62%, transparent);
+}
+
+.transition-arrow {
+  align-self: center;
+  color: var(--selected);
+  font-size: 1.4rem;
+}
+
+.flow-row + .flow-row {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+.flow-header,
+.flow-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 0.6rem;
+}
+
+.flow-header {
+  margin-bottom: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.flow-direction.left-to-right {
+  color: var(--left-flow);
+}
+
+.flow-direction.right-to-left {
+  color: var(--right-flow);
+}
+
+.link-state {
+  padding: 0.08rem 0.35rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--muted-foreground);
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.link-state.partitioned {
+  color: var(--destructive);
+}
+
+.link-state.clogged {
+  color: var(--rejected);
+}
+
+.flow-track {
+  display: grid;
+  grid-template-columns: auto minmax(7rem, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.node {
+  min-width: 2.35rem;
+  padding: 0.27rem 0.38rem;
+  border: 1px solid var(--border);
+  border-radius: 0.32rem;
+  background: var(--background);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.buffer {
+  display: grid;
+  grid-template-columns: repeat(
+    var(--visible-buffer-slots),
+    minmax(1.75rem, 1fr)
+  );
+  gap: 0.24rem;
+  min-width: 0;
+}
+
+.buffer-omitted {
+  grid-column: 1 / -1;
+  color: var(--muted-foreground);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.byte-cell {
+  display: grid;
+  min-width: 0;
+  min-height: 2rem;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 0.28rem;
+  background: var(--background);
+  color: var(--muted-foreground);
+  font: 0.7rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.byte-cell.occupied {
+  border-color: color-mix(in oklch, var(--left-flow) 52%, var(--border));
+  background: var(--byte-fill);
+  color: var(--foreground);
+}
+
+.flow-row.right-to-left .byte-cell.occupied {
+  border-color: color-mix(in oklch, var(--right-flow) 58%, var(--border));
+  background: color-mix(in oklch, var(--right-flow) 24%, var(--muted));
+}
+
+.byte-cell.changed {
+  border-color: var(--recovered);
+  background: var(--byte-changed);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--recovered) 30%, transparent);
+}
+
+.flow-footer {
+  margin: 0.4rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+}
+
+.sender-state.closed {
+  color: var(--destructive);
+}
+
+.occupancy-path {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.occupancy-path.left-to-right {
+  stroke: var(--left-flow);
+}
+
+.occupancy-path.right-to-left {
+  stroke: var(--right-flow);
+}
+
+.occupancy-point {
+  stroke: var(--background);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 740px) {
+  .duplex-transition {
+    grid-template-columns: 1fr;
+  }
+
+  .transition-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
+
+@media (max-width: 440px) {
+  .flow-track {
+    grid-template-columns: 1fr;
+  }
+
+  .node {
+    justify-self: start;
+  }
+
+  .flow-track .node:last-child {
+    justify-self: end;
+  }
+}

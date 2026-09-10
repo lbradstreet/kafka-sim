@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producer experiment explorer</title>
+    <link rel="stylesheet" href="./trace-viewer.css">
+    <link rel="stylesheet" href="./producer-experiment.css">
+  </head>
+  <body>
+    <main id="experiment">
+      <header>
+        <p
+          class="eyebrow">Deterministic producer experiments · <span id="category"></span></p>
+        <h1 id="scenario">Producer experiment explorer</h1>
+        <p id="description"></p>
+        <p id="experiment-intent" class="experiment-prose"></p>
+        <p class="look-for" id="look-for"></p>
+        <p class="meta-line" id="runtime"></p>
+        <div class="trace-loader" role="group" aria-label="Experiment artifact">
+          <label for="trace-file">Load report or bundle</label>
+          <input id="trace-file" type="file"
+            accept=".json,.js,application/json,text/javascript">
+          <button id="bundled-sample" type="button">Use bundled sample</button>
+          <span id="trace-source" aria-live="polite">Bundled sample</span>
+        </div>
+        <p class="trace-error" id="error" role="alert" hidden></p>
+      </header>
+      <section id="comparison-selection" aria-labelledby="comparison-heading"
+        hidden>
+        <h2 id="comparison-heading">Matched producer pair</h2>
+        <div
+          class="controls"><label for="comparison-pair">Variant / profile</label><select id="comparison-pair"></select><button id="comparison-fault-window">Focus fault windows</button></div>
+        <p id="comparison-status" role="status"></p>
+        <ul id="comparison-limits" class="experiment-prose"></ul>
+        <p id="comparison-setup" class="experiment-prose"></p>
+        <details>
+          <summary>Exact configurations, source hashes and fault evidence</summary>
+          <pre id="comparison-provenance" class="json-dump"></pre>
+        </details>
+      </section>
+      <details id="experiment-setup" open>
+        <summary>Experiment setup</summary>
+        <section aria-labelledby="setup-heading" class="experiment-prose">
+          <h2 id="setup-heading">Experiment setup</h2>
+          <p id="experiment-comparison"></p>
+          <p class="caption" id="experiment-primary"></p>
+          <h3>Traffic and destinations</h3>
+          <ul id="experiment-traffic"></ul>
+          <h3>Producer and transport settings</h3>
+          <p id="experiment-settings"></p>
+          <p id="experiment-transport"></p>
+          <p id="experiment-capacity"></p>
+          <h3>Faults and scheduled changes</h3>
+          <ul id="experiment-faults"></ul>
+          <h3>How to interpret the results</h3>
+          <div id="experiment-reading"></div>
+        </section>
+      </details>
+      <section aria-labelledby="runs-heading">
+        <h2 id="runs-heading">Runs</h2>
+        <p
+          class="caption">Select one primary run and up to five overlays. Colors and line patterns follow the run order. Times are relative to each run’s origin.</p>
+        <div id="runs"></div>
+        <details>
+          <summary>Configuration, source and exact phase checks</summary>
+          <pre class="json-dump" id="provenance"></pre>
+        </details>
+      </section>
+      <section aria-labelledby="topology-heading">
+        <div
+          class="section-heading"><h2 id="topology-heading">Partition topology at cursor time</h2><label>Partition lanes <select id="topology-page"></select></label></div>
+        <p class="caption" id="topology-note"></p>
+        <svg id="topology" role="img"
+          aria-label="Brokers and partition leaders at cursor time"></svg>
+      </section>
+      <section class="time-controls" aria-labelledby="time-heading">
+        <h2 id="time-heading">Shared time window</h2>
+        <p
+          class="caption"
+          id="time-help">Drag across the fault strip to select a window. [ / ] pan · − / = zoom · 0 reset · ← / → select an event. Hover any time chart to align the cursor.</p>
+        <div
+          class="controls"><label>Start (ms) <input id="view-start" type="number" min="0" step="any"></label><label>End (ms) <input id="view-end" type="number" min="0" step="any"></label><button id="apply-view">Apply window</button><button id="reset-view">Reset</button></div>
+        <svg id="bands" role="img"
+          aria-label="Fault windows and shared time axis"></svg>
+        <p id="band-legend" class="caption"></p>
+        <p id="view-caption" class="caption" aria-live="polite"></p>
+      </section>
+      <section id="comparison-plots" aria-labelledby="comparison-plots-heading"
+        hidden>
+        <h2 id="comparison-plots-heading">Producer differences</h2>
+        <p class="caption">Classic Java: blue solid. Native / Panama: orange dashed. Every chart uses the same time window and scale for both producers. Lines stop after a run ends.</p>
+        <div id="comparison-summary" class="table-scroll"></div>
+        <div class="comparison-grid">
+<article><h3>Acknowledged records</h3><p class="caption">Records acknowledged when the application consumes delivery, on a shared bucket grid.</p><svg id="comparison-acks" role="img" aria-label="Acknowledged records: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-acks"></p></article>
+<article><h3>Offered records</h3><p class="caption">Actual offers, including attempts that are permanently refused. Closed-loop feedback can change this curve.</p><svg id="comparison-offers" role="img" aria-label="Offered records: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-offers"></p></article>
+<article><h3>Accepted records</h3><p class="caption">Records admitted by each producer. Admission refusals never become deliveries.</p><svg id="comparison-admitted" role="img" aria-label="Accepted records: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-admitted"></p></article>
+<article><h3>Refused offers</h3><p class="caption">Permanent refusals assigned to the original offer time. Includes startup metadata and resource pressure.</p><svg id="comparison-refused" role="img" aria-label="Refused offers: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-refused"></p></article>
+<article><h3>Accepted-record failures</h3><p class="caption">Terminal failed deliveries. Java failure does not establish whether a write was applied.</p><svg id="comparison-failed" role="img" aria-label="Accepted-record failures: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-failed"></p></article>
+<article><h3>Outstanding accepted records</h3><p class="caption">Accepted minus all consumed deliveries, measured at the end of each bucket.</p><svg id="comparison-outstanding" role="img" aria-label="Outstanding accepted records: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-outstanding"></p></article>
+<article><h3>Produce requests at broker</h3><p class="caption">Complete Produce requests received by the shared broker, including retry requests.</p><svg id="comparison-requests" role="img" aria-label="Produce requests at broker: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-requests"></p></article>
+<article><h3>Records appended at broker</h3><p class="caption">New append records; deduplicated retries do not add a second commit.</p><svg id="comparison-committed" role="img" aria-label="Records appended at broker: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-committed"></p></article>
+<article><h3>Client wire bytes</h3><p class="caption">Successful local write completions, including control traffic and retry bytes.</p><svg id="comparison-wire" role="img" aria-label="Client wire bytes: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-wire"></p></article>
+        </div>
+        <h3>Delivery latency over time</h3>
+        <div class="controls"><label>Quantile <select id="comparison-quantile"><option value="p99">p99</option><option value="p90">p90</option><option value="p50">p50</option><option value="max">Maximum</option></select></label><label><input id="comparison-log" type="checkbox"> Log scale</label></div>
+        <p class="caption">Exact bucket quantiles, calculated from every consumed acknowledgment. Empty acknowledgment buckets have no latency value.</p>
+        <svg id="comparison-latency" role="img" aria-label="Acknowledgment latency: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-latency"></p>
+        <h3>Population latency distribution</h3><p id="comparison-ecdf-note" class="caption"></p><svg id="comparison-ecdf" role="img" aria-label="Acknowledged population latency distribution"></svg>
+        <h3>Partition progress</h3><p class="caption">Select an active immutable topic / partition to compare consumed acknowledgments. Topic identity distinguishes recreation; unresolved routes stay separate.</p><label>Partition <select id="comparison-partition"></select></label><svg id="comparison-partition-chart" role="img" aria-label="Partition acknowledgments: classic Java and native"></svg><p class="chart-readout" data-readout="comparison-partition-chart"></p>
+        <h3>Whole-run broker activity</h3><div id="comparison-brokers" class="table-scroll"></div>
+        <h3>Accepted-record failure reasons</h3><p class="caption">Native certainty outcomes and Java exception classes retain their original names.</p><div id="comparison-reasons" class="table-scroll"></div>
+      </section>
+      <section aria-labelledby="outcomes-heading">
+        <h2 id="outcomes-heading">Delivery outcomes</h2>
+        <p
+          class="caption">Primary: stacked acknowledgment, not-written and unknown counts per bucket. Overlay lines: acknowledged records. Deliveries are timed when the client consumes the event.</p>
+        <svg id="outcomes" role="img"
+          aria-label="Delivery outcomes per time bucket"></svg>
+        <p class="chart-readout" data-readout="outcomes"></p>
+      </section>
+      <section aria-labelledby="admission-heading">
+        <h2 id="admission-heading">Offered traffic and admission</h2>
+        <p
+          class="caption">Immutable due-time offers, actual offers and accepted records; bars show permanent refusals. Counts per bucket, including buckets with no deliveries.</p>
+        <svg id="admission" role="img"
+          aria-label="Offered traffic, admissions and refusals"></svg>
+        <p class="chart-readout" data-readout="admission"></p>
+      </section>
+      <section aria-labelledby="latency-heading">
+        <div
+          class="section-heading"><h2 id="latency-heading">Delivery latency over time</h2><label><input id="latency-log" type="checkbox"> Log scale</label></div>
+        <p
+          class="caption">Exact whole-population bucket quantiles: shaded p50–p99, p90 line and maximum dots. Acceptance → consumed acknowledgment.</p>
+        <svg id="latency" role="img"
+          aria-label="Acknowledgment latency quantiles"></svg>
+        <p class="chart-readout" data-readout="latency"></p>
+      </section>
+      <section aria-labelledby="ecdf-heading">
+        <h2 id="ecdf-heading">Population latency distribution</h2>
+        <p class="caption" id="ecdf-note"></p>
+        <svg id="ecdf" role="img"
+          aria-label="Whole-population latency ECDF with logarithmic latency axis"></svg>
+      </section>
+      <section aria-labelledby="brokers-heading">
+        <h2 id="brokers-heading">Broker activity</h2>
+        <p
+          class="caption">In-flight maxima are client-observed requests. RTT starts at dispatch or full local write completion; missing full-write RTT means a response arrived first. Fault ticks are counted in their time bucket.</p>
+        <div id="brokers"></div>
+      </section>
+      <section aria-labelledby="heat-heading">
+        <div
+          class="section-heading"><h2 id="heat-heading">Partition delivery heatmap</h2><label>Partition rows <select id="heatmap-page"></select></label></div>
+        <p
+          class="caption">Acknowledged records per bucket; brightness is relative to this run’s maximum cell. White ticks show leader changes. Immutable topic IDs distinguish recreation.</p>
+        <div class="canvas-scroll">
+          <canvas id="heatmap" role="img"
+            aria-label="Partition acknowledgment counts and leader changes"></canvas>
+        </div>
+        <p id="heat-readout" class="chart-readout"></p>
+      </section>
+      <section aria-labelledby="pressure-heading">
+        <h2 id="pressure-heading">Backpressure</h2>
+        <div id="pools" class="controls"></div>
+        <p
+          class="caption">Pool lines show observed maximum held / capacity (%), not continuous occupancy. Cursor details also report the last observed value.</p>
+        <svg id="credits" role="img"
+          aria-label="Observed credit pool utilization"></svg>
+        <p class="chart-readout" data-readout="credits"></p>
+        <svg id="pressure" role="img"
+          aria-label="Outstanding accepted records and permanent refusals"></svg>
+        <p class="chart-readout" data-readout="pressure"></p>
+      </section>
+      <section aria-labelledby="attempts-heading">
+        <h2 id="attempts-heading">Producer attempts</h2>
+        <p
+          class="caption">Exact whole-run accepted-record histogram. Logarithmic count axis. Producer attempts and correlated client dispatches are distinct measurements.</p>
+        <svg id="attempts" role="img"
+          aria-label="Producer attempt count histogram"></svg>
+      </section>
+      <section aria-labelledby="reasons-heading">
+        <div
+          class="section-heading"><h2 id="reasons-heading">Outcomes by reason</h2><label>Reason page <select id="reason-page"></select></label></div>
+        <p
+          class="caption">Exact whole-run counts for the primary and selected overlays; 32 rows per page.</p>
+        <svg id="reasons" role="img"
+          aria-label="Outcome and reason counts"></svg>
+        <div class="table-scroll" id="reason-table"></div>
+      </section>
+      <section aria-labelledby="batching-heading">
+        <h2 id="batching-heading">Batching and wire traffic</h2>
+        <p
+          class="caption">Records per Produce request include retries. Wire bytes are successful local write completions. Commit records/batches are broker observations. HDR p99 bands below are equivalent-value ranges over actual owner intervals.</p>
+        <svg id="batch-records" role="img"
+          aria-label="Records per request and committed records"></svg>
+        <p class="chart-readout" data-readout="batch-records"></p>
+        <svg id="batch-bytes" role="img"
+          aria-label="Wire bytes per bucket"></svg>
+        <p class="chart-readout" data-readout="batch-bytes"></p>
+        <div id="hdr-charts"></div>
+      </section>
+      <section aria-labelledby="events-heading">
+        <h2 id="events-heading">Events</h2>
+        <p class="caption" id="events-note"></p>
+        <svg id="events" role="group"
+          aria-labelledby="events-title events-desc"></svg>
+        <div
+          class="stepper"><button id="previous">Previous</button><label>Event <input id="step-range" type="range" min="0" max="0" value="0"><output id="step-output"></output></label><button id="next">Next</button></div>
+        <pre id="event-detail" class="json-dump"></pre>
+      </section>
+      <section aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Exact whole-run summary</h2>
+        <p
+          class="caption">All runs on this bundle page. This table always uses the full population, independently of the time window and record-row sample.</p>
+        <div id="summary" class="table-scroll"></div>
+      </section>
+      <details
+        id="scatter-section"><summary>Sampled record latency and inspection</summary><p id="sample-note" class="caption"></p><canvas id="scatter" role="img" aria-label="Sampled record latency by offer time"></canvas><p class="chart-readout" id="scatter-readout"></p><label>Record row <input id="record-index" type="number" min="1" value="1" step="1"></label><pre id="record-detail" class="json-dump"></pre></details>
+      <div id="tooltip" role="tooltip" hidden></div>
+    </main>
+    <script src="./trace-viewer-core.js"></script>
+    <script src="./producer-comparison-model.js"></script>
+    <script src="./producer-experiment-model.js"></script>
+    <script src="./producer-experiment-data.js"></script>
+    <script src="./trace-viewer-ui.js"></script>
+    <script src="./producer-comparison-viewer.js"></script>
+    <script src="./producer-experiment-viewer.js"></script>
+  </body>
+</html>

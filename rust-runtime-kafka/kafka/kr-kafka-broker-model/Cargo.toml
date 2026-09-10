@@ -1,0 +1,13 @@
+[package]
+name = "kr-kafka-broker-model"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Bounded passive Kafka broker model using real protocol frames"
+license = "Apache-2.0 OR MIT"
+publish = false
+[dependencies]
+kr-kafka-protocol = { path = "../kr-kafka-protocol" }
+kr-kafka-record = { path = "../kr-kafka-record" }
+[lints]
+workspace = true

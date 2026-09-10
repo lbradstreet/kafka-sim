@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Request gathering comparison</title>
+<link rel="stylesheet" href="./trace-viewer.css">
+<link rel="stylesheet" href="./request-policy.css"></head>
+<body><main>
+<p class="eyebrow">Producer policy experiment · Full fixtures</p>
+<h1>Does broker-ready gathering pay off?</h1>
+<p>Sealed gathers completed partition batches. BrokerReady can also finish younger, already encoded batches on the same broker and lane, waiting at most one encoder pass. Both use compression-aware batch targets. This comparison measures whether that extra preparation saves requests without costing delivery latency or admission.</p>
+<p>The native policies were rerun with deterministic replay. Java is the frozen seed-0 reference from the preceding Full comparison. Successful latency excludes refusals and failed deliveries. Closed-loop traffic waits for deliveries to free source slots; a faster client can offer and acknowledge more records. Open-loop traffic keeps its scheduled offer rate. Compare populations before interpreting latency or byte totals.</p>
+<p id="status" role="status"></p><p id="error" role="alert" hidden></p>
+<section class="filters" aria-label="Case filters">
+<label>Find case<input id="query" type="search" placeholder="compression, linger, outage…"></label>
+<label>Profile<select id="profile"><option value="">Both profiles</option><option value="common">Common</option><option value="original">Original</option></select></label>
+<label>Order by change<select id="sort"><option value="">Case name</option><option value="produce_requests">Fewest additional requests</option><option value="ack_p99_ns">Lowest p99 change</option><option value="acked">Lowest ACK change</option></select></label>
+</section>
+<label class="case-select">Selected case<select id="case"></select></label>
+<section aria-labelledby="case-title"><h2 id="case-title"></h2><p id="intent"></p>
+<details><summary>Traffic, settings and fault schedule</summary><ul id="description"></ul></details>
+<p id="population" class="caption"></p><div class="table-wrap"><table id="detail"><caption>Selected case: exact totals and successful delivery latency</caption><thead><tr><th>Metric</th><th>Rust Sealed</th><th>Rust BrokerReady</th><th>Java reference</th></tr></thead><tbody></tbody></table></div></section>
+<section aria-labelledby="catalogue-title"><h2 id="catalogue-title">Filtered comparisons</h2><p class="caption">Changes are BrokerReady minus Sealed. A negative request or latency change is smaller; a negative ACK change means fewer acknowledgements. Use the selected-case control above for complete populations. Nanosecond differences remain exact.</p>
+<div class="table-wrap"><table id="catalogue"><thead><tr><th>Case / profile / seed</th><th>Δ requests</th><th>Δ successful p99</th><th>Δ ACK</th><th>Δ failed</th></tr></thead><tbody></tbody></table></div></section>
+<details><summary>Evidence and provenance</summary><ul id="provenance"></ul><p class="caption">The evidence pipeline checks complete execution and replay, audit hashes, matching native policy inputs, and the unchanged Sealed control against the preceding default. This page presents audited metrics; it does not simulate either client or independently prove correctness.</p></details>
+</main>
+<script src="./trace-viewer-core.js"></script>
+<script src="./producer-experiment-model.js"></script>
+<script src="./request-policy-model.js"></script>
+<script src="./request-policy-data.js"></script>
+<script src="./request-policy-viewer.js"></script>
+</body></html>

@@ -1,0 +1,1491 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>kr-runtime trace viewer</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: Canvas;
+      color: CanvasText;
+      --surface: Canvas;
+      --text: CanvasText;
+      --muted: GrayText;
+      --border: color-mix(in srgb, CanvasText 20%, transparent);
+      --soft: color-mix(in srgb, CanvasText 6%, transparent);
+      --hover: color-mix(in srgb, Highlight 14%, transparent);
+      --runtime: CanvasText;
+      --task: Highlight;
+      --timer: LinkText;
+      --random: VisitedText;
+      --other: GrayText;
+      --warning-bg: Mark;
+      --warning-text: MarkText;
+      --selected: Highlight;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    main {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+    }
+
+    h2 {
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+      color: inherit;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    button,
+    input[type="file"],
+    input[type="search"],
+    select {
+      border: 1px solid var(--border);
+      border-radius: 0.45rem;
+      background: var(--surface);
+    }
+
+    button {
+      min-height: 2.35rem;
+      padding: 0.45rem 0.75rem;
+      cursor: pointer;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--hover);
+    }
+
+    button:disabled {
+      color: var(--muted);
+      cursor: default;
+    }
+
+    input[type="search"],
+    select {
+      min-height: 2.35rem;
+      width: 100%;
+      padding: 0.4rem 0.55rem;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 0.35rem;
+    }
+
+    input[type="checkbox"] {
+      accent-color: Highlight;
+    }
+
+    :focus-visible {
+      outline: 3px solid Highlight;
+      outline-offset: 2px;
+    }
+
+    .masthead {
+      display: grid;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 0.82rem;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 0.7rem;
+      padding: 0.9rem;
+      margin-block: 0.8rem;
+    }
+
+    .load-row,
+    .controls,
+    .summary-grid,
+    .detail-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .load-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+
+    .controls {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.3rem;
+      min-width: 0;
+    }
+
+    .field-label,
+    legend {
+      font-weight: 500;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0.8rem 0 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .check-row,
+    .button-row,
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.8rem;
+      align-items: center;
+    }
+
+    .check-item {
+      display: inline-flex;
+      gap: 0.35rem;
+      align-items: center;
+      min-height: 2rem;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-block: 0.8rem;
+    }
+
+    .summary-card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: 0.65rem;
+      padding: 0.75rem;
+    }
+
+    .summary-card dt {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .summary-card dd {
+      margin: 0.3rem 0 0;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-card .context {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 400;
+    }
+
+    .warning,
+    .error {
+      border-radius: 0.55rem;
+      padding: 0.7rem 0.8rem;
+      margin-block: 0.8rem;
+      overflow-wrap: anywhere;
+    }
+
+    .warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .error {
+      border: 2px solid var(--text);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .timeline-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 0.45rem;
+    }
+
+    .timeline-heading > * {
+      min-width: 0;
+    }
+
+    .timeline-heading p,
+    .masthead p {
+      overflow-wrap: anywhere;
+    }
+
+    #timeline-wrap {
+      width: 100%;
+      min-width: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      border-block: 1px solid var(--border);
+      cursor: crosshair;
+    }
+
+    .legend {
+      list-style: none;
+      margin: 0.55rem 0 0;
+      padding: 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .legend-mark {
+      display: inline-grid;
+      width: 1rem;
+      height: 1rem;
+      place-items: center;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .selection-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+
+    #selection-position {
+      color: var(--muted);
+    }
+
+    .detail-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 0;
+    }
+
+    .detail-grid > div {
+      min-width: 0;
+      padding-block: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-grid dt {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .detail-grid dd {
+      margin: 0.15rem 0 0;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      margin: 0.7rem 0 0;
+      padding: 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--soft);
+      color: var(--text);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    details {
+      margin-block: 0.8rem;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .metadata {
+      display: grid;
+      grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+      gap: 0.25rem 0.8rem;
+      margin: 0.75rem 0 0;
+    }
+
+    .metadata dt {
+      color: var(--muted);
+    }
+
+    .metadata dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    #status {
+      min-height: 1.3rem;
+      margin-top: 0.45rem;
+    }
+
+    @media (max-width: 680px) {
+      main {
+        padding: 0.75rem;
+      }
+
+      .load-row,
+      .controls,
+      .summary-grid,
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-heading {
+        display: grid;
+        justify-content: stretch;
+      }
+
+      .load-row button {
+        width: 100%;
+      }
+
+      .panel {
+        padding: 0.75rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <h1>kr-runtime trace viewer</h1>
+      <p class="muted">Inspect deterministic runtime events by authoritative sequence or virtual time.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="open-heading">
+      <h2 id="open-heading">Open trace</h2>
+      <div class="load-row">
+        <label class="field" for="trace-file">
+          <span class="field-label">Trace artifact</span>
+          <input id="trace-file" type="file" accept=".sbe,application/octet-stream">
+        </label>
+        <button id="sample-button" type="button">Load sample</button>
+      </div>
+      <p id="status" class="small muted" aria-live="polite"></p>
+    </section>
+
+    <aside id="error-banner" class="error" role="alert" hidden></aside>
+    <aside id="drop-warning" class="warning" role="alert" hidden></aside>
+
+    <section aria-label="Trace summary">
+      <dl class="summary-grid">
+        <div class="summary-card">
+          <dt>Run</dt>
+          <dd id="summary-run">—<span class="context" id="summary-driver">—</span></dd>
+        </div>
+        <div class="summary-card">
+          <dt>Visible events</dt>
+          <dd id="summary-events">—<span class="context" id="summary-lanes">—</span></dd>
+        </div>
+        <div class="summary-card">
+          <dt id="summary-time-label">Virtual time</dt>
+          <dd id="summary-time">—<span class="context" id="summary-steps">—</span></dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="panel" aria-labelledby="filters-heading">
+      <h2 id="filters-heading">View controls</h2>
+      <div class="controls">
+        <label class="field" for="axis-select">
+          <span class="field-label">Horizontal axis</span>
+          <select id="axis-select">
+            <option value="sequence">Event sequence</option>
+            <option value="time">Virtual time</option>
+          </select>
+        </label>
+        <label class="field" for="time-basis-select">
+          <span class="field-label">Time display</span>
+          <select id="time-basis-select">
+            <option value="relative">Relative to run start</option>
+            <option value="absolute">Absolute virtual time</option>
+          </select>
+        </label>
+        <label class="field" for="severity-select">
+          <span class="field-label">Minimum severity</span>
+          <select id="severity-select">
+            <option value="5">All events (debug+)</option>
+            <option value="10">Info and above</option>
+            <option value="20">Warnings and above</option>
+            <option value="30">Notable warnings and above</option>
+            <option value="40">Errors and severe events</option>
+          </select>
+        </label>
+        <label class="field" for="search-input">
+          <span class="field-label">Search type, task, ID, or field</span>
+          <input id="search-input" type="search" autocomplete="off" placeholder="For example: timer 4 or task 1:0">
+        </label>
+      </div>
+      <fieldset>
+        <legend>Families</legend>
+        <div id="family-options" class="check-row"></div>
+      </fieldset>
+      <div class="button-row">
+        <button id="reset-button" type="button">Reset view</button>
+      </div>
+    </section>
+
+    <section aria-labelledby="timeline-heading">
+      <div class="timeline-heading">
+        <h2 id="timeline-heading">Timeline</h2>
+        <p id="axis-description" class="small muted">Position shows authoritative event sequence; gaps remain visible.</p>
+      </div>
+      <div id="timeline-wrap">
+        <canvas id="timeline" role="img" aria-label="No trace loaded"></canvas>
+      </div>
+      <ul class="legend" aria-label="Timeline symbol legend">
+        <li><span class="legend-mark" aria-hidden="true">│</span>runtime</li>
+        <li><span class="legend-mark" aria-hidden="true">●</span>task</li>
+        <li><span class="legend-mark" aria-hidden="true">◆</span>timer</li>
+        <li><span class="legend-mark" aria-hidden="true">■</span>random</li>
+        <li><span class="legend-mark" aria-hidden="true">!</span>warning or higher (20+)</li>
+      </ul>
+      <p id="lane-note" class="small muted"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="details-heading">
+      <div class="selection-bar">
+        <h2 id="details-heading">Selected event</h2>
+        <div class="button-row">
+          <button id="previous-button" type="button">Previous event</button>
+          <span id="selection-position" aria-live="polite">No event selected</span>
+          <button id="next-button" type="button">Next event</button>
+        </div>
+      </div>
+      <dl id="event-details" class="detail-grid"></dl>
+      <pre id="event-fields" aria-label="Selected event fields">Select a timeline mark to inspect its exact values.</pre>
+    </section>
+
+    <details>
+      <summary>Run metadata</summary>
+      <dl id="run-metadata" class="metadata"></dl>
+      <pre id="run-catalogs" aria-label="Random stream and task catalogs">No trace loaded.</pre>
+    </details>
+  </main>
+
+  <script src="trace-viewer-core.js"></script>
+  <script src="sbe-ir.js"></script>
+  <script src="dst-trace-sbe-ir.js"></script>
+  <script src="sbe-decoder.js"></script>
+  <script src="runtime-trace-time.js"></script>
+  <script src="dst-trace-sample.js"></script>
+  <script>
+    "use strict";
+
+    const TRACE_TIME = globalThis.RUNTIME_TRACE_TIME;
+    const { formatExactNanos } = globalThis.TRACE_VIEWER_CORE;
+    const MAX_FILE_BYTES = 64 * 1024 * 1024;
+    const MAX_PRESENTATION_EVENTS = 100_000;
+    const MAX_TASK_CATALOG = 4_096;
+    const MAX_EVENT_FAMILIES = 16;
+    const MAX_TASK_LANES = 64;
+    const MAX_HIT_REGIONS = MAX_PRESENTATION_EVENTS;
+    const MAX_CANVAS_CSS_WIDTH = 8_192;
+    const MAX_CANVAS_CSS_HEIGHT = 8_192;
+    const MAX_CANVAS_PIXELS = 16 * 1024 * 1024;
+    const MAX_PIXEL_RATIO = 2;
+    const KNOWN_EVENT_TYPES = new Set([
+      "runtimestarted", "taskspawned", "taskenqueued", "taskpollstarted",
+      "taskpending", "taskcompleted", "taskcancelled", "taskpanicked",
+      "taskdroppanicked", "wakerpanicked", "timerscheduled", "timerfired",
+      "timercancelled", "timeadvanced", "runtimestalled", "budgetexhausted",
+      "runtimestopped", "randomchoice"
+    ]);
+
+    const elements = {
+      file: document.getElementById("trace-file"),
+      sample: document.getElementById("sample-button"),
+      status: document.getElementById("status"),
+      error: document.getElementById("error-banner"),
+      warning: document.getElementById("drop-warning"),
+      axis: document.getElementById("axis-select"),
+      timeBasis: document.getElementById("time-basis-select"),
+      severity: document.getElementById("severity-select"),
+      search: document.getElementById("search-input"),
+      families: document.getElementById("family-options"),
+      reset: document.getElementById("reset-button"),
+      canvas: document.getElementById("timeline"),
+      canvasWrap: document.getElementById("timeline-wrap"),
+      axisDescription: document.getElementById("axis-description"),
+      laneNote: document.getElementById("lane-note"),
+      previous: document.getElementById("previous-button"),
+      next: document.getElementById("next-button"),
+      selectionPosition: document.getElementById("selection-position"),
+      details: document.getElementById("event-details"),
+      fields: document.getElementById("event-fields"),
+      metadata: document.getElementById("run-metadata"),
+      catalogs: document.getElementById("run-catalogs"),
+      summaryRun: document.getElementById("summary-run"),
+      summaryDriver: document.getElementById("summary-driver"),
+      summaryEvents: document.getElementById("summary-events"),
+      summaryLanes: document.getElementById("summary-lanes"),
+      summaryTimeLabel: document.getElementById("summary-time-label"),
+      summaryTime: document.getElementById("summary-time"),
+      summarySteps: document.getElementById("summary-steps")
+    };
+
+    const state = {
+      header: null,
+      events: [],
+      filtered: [],
+      selectedIndex: -1,
+      selectedFamilies: new Set(),
+      hitRegions: [],
+      lanes: [],
+      foldedTaskCount: 0,
+      sourceName: "",
+      searchTimer: null,
+      timeRange: null
+    };
+
+    function text(value, fallback = "—") {
+      if (value === null || value === undefined || value === "") return fallback;
+      return String(value);
+    }
+
+    function normalizeType(value) {
+      return String(value ?? "unknown").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function safeJson(value) {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (_error) {
+        return "[value could not be represented]";
+      }
+    }
+
+    function normalizedSeverity(value) {
+      const numeric = Number(value ?? 10);
+      if (!Number.isFinite(numeric)) return 10;
+      const integer = Math.max(0, Math.trunc(numeric));
+      if (integer >= 0 && integer <= 3) return [10, 20, 30, 40][integer];
+      return integer;
+    }
+
+    function severityLabel(value) {
+      if (value >= 40) return `${value} · error/severe`;
+      if (value >= 30) return `${value} · notable warning`;
+      if (value >= 20) return `${value} · warning`;
+      if (value >= 10) return `${value} · info`;
+      return `${value} · debug`;
+    }
+
+    function exactBigInt(value, fieldName) {
+      if (typeof value === "bigint") return value;
+      if (typeof value === "number") {
+        if (!Number.isSafeInteger(value) || value < 0) {
+          throw new Error(`${fieldName} must be an unsigned integer string; a JSON number would lose precision`);
+        }
+        return BigInt(value);
+      }
+      if (typeof value !== "string" || !/^(?:0|[1-9][0-9]*|0[xX][0-9a-fA-F]+)$/.test(value)) {
+        throw new Error(`${fieldName} must be an unsigned integer string`);
+      }
+      return BigInt(value);
+    }
+
+    function exactDecimalStringBigInt(value, fieldName) {
+      if (typeof value !== "string" || !/^(?:0|[1-9][0-9]*)$/.test(value)) {
+        throw new Error(`${fieldName} must be a canonical unsigned decimal integer string`);
+      }
+      return BigInt(value);
+    }
+
+    function capacityUnit(header) {
+      return header.capacity_unit;
+    }
+
+    function formatCapacity(value, unit) {
+      return `${text(value, "unknown")} ${unit}`;
+    }
+
+    function validateDecodedRecords(records) {
+      if (!records.length || records[0]?.record !== "header") {
+        throw new Error("The first record must be a trace header");
+      }
+      if (records.length - 1 > MAX_PRESENTATION_EVENTS) {
+        throw new Error(`trace exceeds the ${MAX_PRESENTATION_EVENTS.toLocaleString()}-event presentation limit`);
+      }
+
+      const header = records[0];
+      if (header.format !== "dst-trace") {
+        throw new Error(`unrecognized artifact format ${text(header.format)}`);
+      }
+      if (header.capacity_unit !== "events" && header.capacity_unit !== "bytes") {
+        throw new Error("header.capacity_unit must be either events or bytes");
+      }
+      const capacity = exactDecimalStringBigInt(header.capacity, "header.capacity");
+      exactDecimalStringBigInt(
+        header.retention?.prefix_capacity,
+        "header.retention.prefix_capacity"
+      );
+      exactDecimalStringBigInt(
+        header.retention?.tail_capacity,
+        "header.retention.tail_capacity"
+      );
+      if (header.capacity_unit === "bytes") {
+        const retainedBytes = exactDecimalStringBigInt(
+          header.retained_bytes,
+          "header.retained_bytes"
+        );
+        if (retainedBytes > capacity) {
+          throw new Error("header.retained_bytes must not exceed header.capacity");
+        }
+      } else if (header.retained_bytes !== null) {
+        throw new Error("header.retained_bytes must be null when header.capacity_unit is events");
+      }
+      exactBigInt(header.dropped_events, "header.dropped_events");
+      if (header.sampling) {
+        if (header.sampling.mode !== "periodic") {
+          throw new Error(`unsupported sampling mode ${String(header.sampling.mode)}`);
+        }
+        if (header.sampling.algorithm_version !== 1) {
+          throw new Error(`unsupported sampling algorithm version ${String(header.sampling.algorithm_version)}`);
+        }
+        if (header.sampling.fingerprint_scope !== "sampled_events") {
+          throw new Error(`unsupported sampling fingerprint scope ${String(header.sampling.fingerprint_scope)}`);
+        }
+        const period = exactBigInt(header.sampling.period, "header.sampling.period");
+        const phase = exactBigInt(header.sampling.phase, "header.sampling.phase");
+        if (period <= 0n) throw new Error("header.sampling.period must be positive");
+        if (phase < 0n || phase >= period) {
+          throw new Error("header.sampling.phase must be in 0..period");
+        }
+      }
+      if (header.last_sequence !== null && header.last_sequence !== undefined) {
+        exactBigInt(header.last_sequence, "header.last_sequence");
+      }
+      if (header.ordering_violation) {
+        exactBigInt(
+          header.ordering_violation.previous_sequence,
+          "header.ordering_violation.previous_sequence"
+        );
+        exactBigInt(
+          header.ordering_violation.rejected_sequence,
+          "header.ordering_violation.rejected_sequence"
+        );
+      }
+      const timeRange = TRACE_TIME.traceTimeRange(
+        header.start_time_ns,
+        header.now_ns
+      );
+      exactBigInt(header.total_steps, "header.total_steps");
+      if (!Array.isArray(header.tasks) || header.tasks.length > MAX_TASK_CATALOG) {
+        throw new Error(`header.tasks exceeds the ${MAX_TASK_CATALOG.toLocaleString()}-task presentation limit`);
+      }
+
+      const events = [];
+      let previousSequence = null;
+      for (let index = 1; index < records.length; index += 1) {
+        const raw = records[index];
+        if (!raw || raw.record !== "event") {
+          throw new Error(`record ${index} must be a trace event`);
+        }
+        const sequence = exactBigInt(raw.sequence, `event ${index}.sequence`);
+        const atNs = TRACE_TIME.boundedTraceTime(
+          raw.at_ns,
+          timeRange,
+          `event ${index}.at_ns`
+        );
+        if (previousSequence !== null && sequence <= previousSequence) {
+          throw new Error(`Event sequences must increase strictly; ${sequence} follows ${previousSequence}`);
+        }
+        previousSequence = sequence;
+        const family = String(raw.family ?? "unknown").trim().toLowerCase() || "unknown";
+        const severity = normalizedSeverity(raw.severity);
+        const fields = raw.fields && typeof raw.fields === "object" && !Array.isArray(raw.fields)
+          ? raw.fields
+          : {};
+        const event = {
+          record: "event",
+          sequence: String(raw.sequence),
+          at_ns: String(raw.at_ns),
+          type: String(raw.type ?? "unknown"),
+          family,
+          severity,
+          task: raw.task === null || raw.task === undefined ? null : String(raw.task),
+          fields,
+          _sequence: sequence,
+          _atNs: atNs,
+          _sourceIndex: index - 1
+        };
+        event._search = [
+          event.sequence,
+          event.at_ns,
+          event.type,
+          event.family,
+          event.task ?? "",
+          safeJson(event.fields)
+        ].join(" ").toLowerCase();
+        events.push(event);
+      }
+
+      const declaredCount = Number(header.event_count);
+      if (!Number.isSafeInteger(declaredCount) || declaredCount !== events.length) {
+        throw new Error(`header declares ${text(header.event_count)} events; file contains ${events.length}`);
+      }
+      const unknownTypes = events.filter(event => !KNOWN_EVENT_TYPES.has(normalizeType(event.type))).length;
+      if (unknownTypes > 0) throw new Error("artifact contains an unknown event type");
+      const familyCount = new Set(events.map(event => event.family)).size;
+      if (familyCount > MAX_EVENT_FAMILIES) {
+        throw new Error(`trace exceeds the ${MAX_EVENT_FAMILIES}-family presentation limit`);
+      }
+      return { header, events, timeRange };
+    }
+
+    function loadBinaryArtifact(binary, sourceName) {
+      try {
+        const decoded = globalThis.DstTraceSbe.decodeArtifact(
+          binary,
+          {
+            maxTaskSnapshots: MAX_TASK_CATALOG,
+            maxEvents: MAX_PRESENTATION_EVENTS
+          }
+        );
+        const parsed = validateDecodedRecords([decoded.header, ...decoded.events]);
+        installTrace(parsed, sourceName);
+      } catch (error) {
+        showError(error instanceof Error ? error.message : String(error));
+      }
+    }
+
+    function loadEmbeddedSample() {
+      try {
+        const base64 = globalThis.DstTraceSample?.base64;
+        if (typeof base64 !== "string") {
+          throw new Error("The generated embedded trace sample is unavailable.");
+        }
+        const artifactSchema = globalThis.DstTraceSbe.schema.artifactSchema;
+        loadBinaryArtifact(
+          globalThis.SbeIr.decodeBase64(base64),
+          `embedded schema-${artifactSchema} sample`
+        );
+      } catch (error) {
+        showError(error instanceof Error ? error.message : String(error));
+      }
+    }
+
+    function installTrace(parsed, sourceName) {
+      state.header = parsed.header;
+      state.events = parsed.events;
+      state.timeRange = parsed.timeRange;
+      state.sourceName = sourceName;
+      state.selectedFamilies = new Set(state.events.map(event => event.family));
+      state.selectedIndex = state.events.length ? 0 : -1;
+      elements.axis.value = "sequence";
+      elements.timeBasis.value = TRACE_TIME.RELATIVE;
+      elements.severity.value = "5";
+      elements.search.value = "";
+      elements.error.hidden = true;
+      updateAxisDescription();
+      renderFamilyOptions();
+      updateDropWarning();
+      renderMetadata();
+      applyFilters();
+      elements.status.textContent = `Loaded ${state.events.length} events from ${sourceName}.`;
+    }
+
+    function showError(message) {
+      elements.error.textContent = message;
+      elements.error.hidden = false;
+      elements.status.textContent = "Trace was not loaded.";
+    }
+
+    function renderFamilyOptions() {
+      elements.families.replaceChildren();
+      const families = [...new Set(state.events.map(event => event.family))].sort();
+      families.forEach((family, index) => {
+        const wrapper = document.createElement("label");
+        wrapper.className = "check-item";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = state.selectedFamilies.has(family);
+        checkbox.value = family;
+        checkbox.id = `family-${index}`;
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) state.selectedFamilies.add(family);
+          else state.selectedFamilies.delete(family);
+          applyFilters();
+        });
+        const labelText = document.createElement("span");
+        labelText.textContent = family;
+        wrapper.append(checkbox, labelText);
+        elements.families.append(wrapper);
+      });
+    }
+
+    function updateDropWarning() {
+      if (!state.header) {
+        elements.warning.hidden = true;
+        return;
+      }
+      const dropped = exactBigInt(state.header.dropped_events, "header.dropped_events");
+      const messages = [];
+      if (state.header.sampling) {
+        const period = text(state.header.sampling.period);
+        const phase = text(state.header.sampling.phase);
+        messages.push(`Sampled trace: periodic sampling retained sequence positions congruent to ${phase} modulo ${period}. Unsampled events are omitted independently of recorder retention, and the fingerprint covers sampled events only.`);
+      }
+      if (dropped !== 0n) {
+        const capacity = text(state.header.capacity, "unknown capacity");
+        const unit = capacityUnit(state.header);
+        const last = text(state.header.last_sequence, "unknown");
+        const mode = state.header.retention.mode;
+        if (mode === "tail") {
+          if (unit === "bytes") {
+            messages.push(`Incomplete trace: this artifact is configured with a byte-bounded tail of ${capacity} bytes; ${dropped.toString()} observed events are absent from the retained trace. The sink observed through sequence ${last}. Conclusions about omitted portions of the run may be incomplete.`);
+          } else {
+            messages.push(`Incomplete trace: this artifact retains a capacity-bounded tail of ${capacity} events and omits ${dropped.toString()} earlier events. The sink observed through sequence ${last}. Conclusions about the beginning of the run may be incomplete.`);
+          }
+        } else if (mode === "prefix_and_tail") {
+          const prefix = text(state.header.retention.prefix_capacity, "unknown");
+          const tail = text(state.header.retention.tail_capacity, "unknown");
+          if (unit === "bytes") {
+            messages.push(`Incomplete trace: this artifact is configured with a byte-bounded prefix of ${prefix} bytes and tail of ${tail} bytes; ${dropped.toString()} observed events are absent from the retained trace. The sink observed through sequence ${last}. Conclusions about omitted portions of the run may be incomplete.`);
+          } else {
+            messages.push(`Incomplete trace: this artifact retains the first ${prefix} and most recent ${tail} events and omits ${dropped.toString()} middle events. The sink observed through sequence ${last}.`);
+          }
+        } else {
+          if (unit === "bytes") {
+            messages.push(`Incomplete trace: this artifact is configured with a byte-bounded prefix of ${capacity} bytes; ${dropped.toString()} observed events are absent from the retained trace. The sink observed through sequence ${last}. Conclusions about omitted portions of the run may be incomplete.`);
+          } else {
+            messages.push(`Incomplete trace: this artifact retains a capacity-bounded prefix of ${capacity} events and omits ${dropped.toString()} later events. The sink observed through sequence ${last}. Conclusions about the end of the run may be incomplete.`);
+          }
+        }
+      }
+      if (state.header.ordering_violation) {
+        const previous = text(state.header.ordering_violation.previous_sequence);
+        const rejected = text(state.header.ordering_violation.rejected_sequence);
+        messages.push(`Corrupt trace order: sequence ${rejected} did not advance beyond ${previous} and was rejected. The fingerprint excludes the rejected event.`);
+      }
+      elements.warning.textContent = messages.join(" ");
+      elements.warning.hidden = messages.length === 0;
+    }
+
+    function applyFilters() {
+      if (!state.header) {
+        state.filtered = [];
+        renderAll();
+        return;
+      }
+      const minimumSeverity = Number(elements.severity.value);
+      const query = elements.search.value.trim().toLowerCase();
+      const selectedEvent = state.filtered[state.selectedIndex] ?? null;
+      state.filtered = state.events.filter(event =>
+        state.selectedFamilies.has(event.family) &&
+        event.severity >= minimumSeverity &&
+        (!query || event._search.includes(query))
+      );
+      if (selectedEvent) {
+        const retainedIndex = state.filtered.indexOf(selectedEvent);
+        state.selectedIndex = retainedIndex >= 0 ? retainedIndex : (state.filtered.length ? 0 : -1);
+      } else {
+        state.selectedIndex = state.filtered.length ? 0 : -1;
+      }
+      renderAll();
+    }
+
+    function compareTaskIds(left, right) {
+      const leftParts = String(left).split(":");
+      const rightParts = String(right).split(":");
+      for (let index = 0; index < Math.max(leftParts.length, rightParts.length); index += 1) {
+        const leftPart = leftParts[index] ?? "0";
+        const rightPart = rightParts[index] ?? "0";
+        if (/^[0-9]+$/.test(leftPart) && /^[0-9]+$/.test(rightPart)) {
+          const leftNumber = BigInt(leftPart);
+          const rightNumber = BigInt(rightPart);
+          if (leftNumber < rightNumber) return -1;
+          if (leftNumber > rightNumber) return 1;
+        } else {
+          const compared = leftPart.localeCompare(rightPart);
+          if (compared) return compared;
+        }
+      }
+      return 0;
+    }
+
+    function buildLanes(events) {
+      const taskIds = [...new Set(events.filter(event => event.task).map(event => event.task))]
+        .sort(compareTaskIds);
+      const shownTaskIds = new Set(taskIds.slice(0, MAX_TASK_LANES));
+      state.foldedTaskCount = Math.max(0, taskIds.length - shownTaskIds.size);
+      const laneDefinitions = [];
+      const used = new Set();
+
+      function addLane(key, label, kind) {
+        if (used.has(key)) return;
+        used.add(key);
+        laneDefinitions.push({ key, label, kind });
+      }
+
+      if (events.some(event => event.family === "runtime" || (!event.task && event.family !== "timer" && event.family !== "random"))) {
+        addLane("runtime", "Runtime", "runtime");
+      }
+      for (const taskId of taskIds.slice(0, MAX_TASK_LANES)) {
+        addLane(`task:${taskId}`, `Task ${taskId}`, "task");
+      }
+      if (state.foldedTaskCount > 0) addLane("task:other", `Other tasks (${state.foldedTaskCount})`, "task");
+      if (events.some(event => event.family === "timer")) addLane("timer", "Timers", "timer");
+      if (events.some(event => event.family === "random")) addLane("random", "Random", "random");
+
+      const standardFamilies = new Set(["runtime", "task", "timer", "random"]);
+      for (const family of [...new Set(events.map(event => event.family))].sort()) {
+        if (!standardFamilies.has(family)) addLane(`family:${family}`, family, "other");
+      }
+
+      function laneKeyFor(event) {
+        if (event.family === "timer") return "timer";
+        if (event.family === "random") return "random";
+        if (event.task) return shownTaskIds.has(event.task) ? `task:${event.task}` : "task:other";
+        if (event.family === "runtime") return "runtime";
+        return `family:${event.family}`;
+      }
+
+      const indexByKey = new Map(laneDefinitions.map((lane, index) => [lane.key, index]));
+      for (const event of events) event._laneIndex = indexByKey.get(laneKeyFor(event)) ?? 0;
+      return laneDefinitions;
+    }
+
+    function renderAll() {
+      state.lanes = buildLanes(state.filtered);
+      renderSummary();
+      renderTimeline();
+      renderSelection();
+      elements.laneNote.textContent = state.foldedTaskCount > 0
+        ? `${state.foldedTaskCount} task lanes are folded into “Other tasks”; search for a task ID to isolate it.`
+        : "";
+    }
+
+    function selectedTimeBasis() {
+      return elements.timeBasis.value === TRACE_TIME.ABSOLUTE
+        ? TRACE_TIME.ABSOLUTE
+        : TRACE_TIME.RELATIVE;
+    }
+
+    function formatDisplayedTime(value) {
+      return TRACE_TIME.formatTraceTime(
+        value,
+        state.timeRange,
+        selectedTimeBasis()
+      );
+    }
+
+    function updateAxisDescription() {
+      if (elements.axis.value !== "time") {
+        elements.axisDescription.textContent = "Position shows authoritative event sequence; gaps remain visible.";
+        return;
+      }
+      elements.axisDescription.textContent = selectedTimeBasis() === TRACE_TIME.RELATIVE
+        ? "Position spans the full run from +0 ns to its terminal virtual time; same-time events stack within their lane."
+        : "Position spans the full run from its absolute virtual start to terminal time; same-time events stack within their lane.";
+    }
+
+    function renderSummary() {
+      if (!state.header) {
+        elements.summaryRun.firstChild.textContent = "—";
+        elements.summaryDriver.textContent = "—";
+        elements.summaryEvents.firstChild.textContent = "—";
+        elements.summaryLanes.textContent = "—";
+        elements.summaryTimeLabel.textContent = "Virtual time";
+        elements.summaryTime.firstChild.textContent = "—";
+        elements.summarySteps.textContent = "—";
+        return;
+      }
+      elements.summaryRun.firstChild.textContent = `${text(state.header.outcome)} · seed ${text(state.header.seed)}`;
+      elements.summaryDriver.textContent = text(state.header.driver);
+      elements.summaryEvents.firstChild.textContent = `${state.filtered.length} / ${state.events.length}`;
+      elements.summaryLanes.textContent = `${state.lanes.length} visible lane${state.lanes.length === 1 ? "" : "s"}`;
+      const basis = selectedTimeBasis();
+      elements.summaryTimeLabel.textContent = basis === TRACE_TIME.RELATIVE
+        ? "Elapsed virtual time"
+        : "Absolute virtual time";
+      elements.summaryTime.firstChild.textContent = TRACE_TIME.formatTraceTime(
+        state.timeRange.end,
+        state.timeRange,
+        basis
+      );
+      const companionTime = basis === TRACE_TIME.RELATIVE
+        ? `start ${TRACE_TIME.formatTraceTime(state.timeRange.start, state.timeRange, TRACE_TIME.ABSOLUTE)}`
+        : `+${formatExactNanos(state.timeRange.duration)} from start`;
+      elements.summarySteps.textContent = `${companionTime} · ${text(state.header.total_steps, "0")} scheduler steps`;
+    }
+
+    function appendDefinitionList(list, entries, groupEntries = false) {
+      list.replaceChildren();
+      for (const [label, value] of entries) {
+        const term = document.createElement("dt");
+        term.textContent = label;
+        const definition = document.createElement("dd");
+        definition.textContent = text(value);
+        if (groupEntries) {
+          const group = document.createElement("div");
+          group.append(term, definition);
+          list.append(group);
+        } else {
+          list.append(term, definition);
+        }
+      }
+    }
+
+    function renderMetadata() {
+      if (!state.header) {
+        elements.metadata.replaceChildren();
+        elements.catalogs.textContent = "No trace loaded.";
+        return;
+      }
+      const unit = capacityUnit(state.header);
+      const retainedBytes = state.header.retained_bytes === null
+        ? "not applicable"
+        : formatCapacity(state.header.retained_bytes, "bytes");
+      appendDefinitionList(elements.metadata, [
+        ["Source", state.sourceName],
+        ["Artifact schema", state.header.artifact_schema],
+        ["Runtime reproduction schema", state.header.runtime_reproduction_schema],
+        ["Determinism checkpoint schema", state.header.determinism_checkpoint_schema],
+        ["Trace schema", state.header.trace_schema],
+        ["RNG version", state.header.rng_version],
+        ["Seed", state.header.seed],
+        ["Max tasks", state.header.max_tasks],
+        ["Max timers", state.header.max_timers],
+        ["Max steps per run", state.header.max_steps_per_run],
+        [
+          "Max virtual time (ns)",
+          state.header.max_time_ns === null ? "none" : state.header.max_time_ns
+        ],
+        ["Driver", state.header.driver],
+        ["Outcome", state.header.outcome],
+        ["Trace fingerprint", state.header.trace_fingerprint],
+        ["Retained events", state.events.length],
+        ["Capacity unit", unit],
+        ["Capacity", formatCapacity(state.header.capacity, unit)],
+        ["Retained bytes", retainedBytes],
+        ["Retention mode", state.header.retention.mode],
+        [
+          "Prefix capacity",
+          formatCapacity(state.header.retention.prefix_capacity, unit)
+        ],
+        ["Tail capacity", formatCapacity(state.header.retention.tail_capacity, unit)],
+        ["Sampling mode", state.header.sampling?.mode ?? "none"],
+        ["Sampling algorithm version", state.header.sampling?.algorithm_version ?? "—"],
+        ["Sampling period", state.header.sampling?.period ?? "—"],
+        ["Sampling phase", state.header.sampling?.phase ?? "—"],
+        ["Fingerprint scope", state.header.sampling?.fingerprint_scope ?? "all observed events"],
+        ["Dropped events", state.header.dropped_events],
+        ["Last observed sequence", state.header.last_sequence],
+        ["Start (exact ns)", state.header.start_time_ns],
+        ["Now (exact ns)", state.header.now_ns],
+        ["Elapsed (exact ns)", state.timeRange.duration.toString()],
+        ["Total steps", state.header.total_steps],
+        ["Next enqueue sequence", state.header.next_enqueue_sequence],
+        ["Next timer sequence", state.header.next_timer_sequence],
+        ["Next timer ID", state.header.next_timer_id],
+        ["Ready tasks", state.header.ready_tasks],
+        ["Live timers", state.header.live_timers],
+        ["Live tasks", state.header.live_tasks],
+        ["Stopped", state.header.stopped]
+      ]);
+      elements.catalogs.textContent = safeJson({
+        random: Array.isArray(state.header.random) ? state.header.random : [],
+        tasks: Array.isArray(state.header.tasks) ? state.header.tasks : []
+      });
+    }
+
+    function cssColor(variableName) {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+      return raw || "CanvasText";
+    }
+
+    function truncateCanvasText(context, value, maximumWidth) {
+      const source = String(value);
+      if (context.measureText(source).width <= maximumWidth) return source;
+      let result = source;
+      while (result.length > 1 && context.measureText(`${result}…`).width > maximumWidth) {
+        result = result.slice(0, -1);
+      }
+      return `${result}…`;
+    }
+
+    function eventAxisValue(event) {
+      return elements.axis.value === "time" ? event._atNs : event._sequence;
+    }
+
+    function drawMarker(context, event, x, y, selected) {
+      const colors = {
+        runtime: cssColor("--runtime"),
+        task: cssColor("--task"),
+        timer: cssColor("--timer"),
+        random: cssColor("--random")
+      };
+      const color = colors[event.family] ?? cssColor("--other");
+      context.save();
+      context.strokeStyle = color;
+      context.fillStyle = color;
+      context.lineWidth = 1.7;
+      context.beginPath();
+      if (event.family === "runtime") {
+        context.moveTo(x, y - 7);
+        context.lineTo(x, y + 7);
+      } else if (event.family === "timer") {
+        context.moveTo(x, y - 5.5);
+        context.lineTo(x + 5.5, y);
+        context.lineTo(x, y + 5.5);
+        context.lineTo(x - 5.5, y);
+        context.closePath();
+      } else if (event.family === "random") {
+        context.rect(x - 4.5, y - 4.5, 9, 9);
+      } else if (event.family === "task") {
+        context.arc(x, y, 4.8, 0, Math.PI * 2);
+      } else {
+        context.moveTo(x - 5, y - 5);
+        context.lineTo(x + 5, y + 5);
+        context.moveTo(x + 5, y - 5);
+        context.lineTo(x - 5, y + 5);
+      }
+      if (event.family === "runtime" || !["runtime", "timer", "random", "task"].includes(event.family)) context.stroke();
+      else context.fill();
+
+      if (event.severity >= 20) {
+        context.strokeStyle = cssColor("--text");
+        context.lineWidth = event.severity >= 30 ? 2 : 1;
+        context.beginPath();
+        context.arc(x, y, 8, 0, Math.PI * 2);
+        context.stroke();
+      }
+      if (event.severity >= 20) {
+        context.fillStyle = cssColor("--text");
+        context.font = "500 11px ui-sans-serif, system-ui, sans-serif";
+        context.textAlign = "center";
+        context.textBaseline = "bottom";
+        context.fillText("!", x, y - 8);
+      }
+      if (selected) {
+        context.strokeStyle = cssColor("--selected");
+        context.lineWidth = 3;
+        context.beginPath();
+        context.arc(x, y, 11, 0, Math.PI * 2);
+        context.stroke();
+      }
+      context.restore();
+    }
+
+    function renderTimeline() {
+      const canvas = elements.canvas;
+      const width = Math.min(
+        MAX_CANVAS_CSS_WIDTH,
+        Math.max(280, Math.floor(elements.canvasWrap.getBoundingClientRect().width))
+      );
+      const laneHeight = 40;
+      const top = 26;
+      const bottom = elements.axis.value === "time" ? 64 : 48;
+      const emptyHeight = 150;
+      const height = Math.min(
+        MAX_CANVAS_CSS_HEIGHT,
+        state.lanes.length ? top + state.lanes.length * laneHeight + bottom : emptyHeight
+      );
+      let ratio = Math.min(
+        Math.max(window.devicePixelRatio || 1, 1),
+        MAX_PIXEL_RATIO
+      );
+      ratio = Math.min(
+        ratio,
+        Math.sqrt(MAX_CANVAS_PIXELS / Math.max(1, width * height))
+      );
+      canvas.width = Math.floor(width * ratio);
+      canvas.height = Math.floor(height * ratio);
+      canvas.style.height = `${height}px`;
+      const context = canvas.getContext("2d");
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.clearRect(0, 0, width, height);
+      state.hitRegions = [];
+
+      const labelWidth = elements.axis.value === "time" && width < 450
+        ? 58
+        : Math.max(82, Math.min(165, Math.floor(width * 0.29)));
+      const plotLeft = labelWidth + 8;
+      const plotRight = width - 14;
+      const plotWidth = Math.max(1, plotRight - plotLeft);
+      const textColor = cssColor("--text");
+      const mutedColor = cssColor("--muted");
+      const borderColor = cssColor("--border");
+      context.font = "12px ui-sans-serif, system-ui, sans-serif";
+      context.textBaseline = "middle";
+
+      if (!state.filtered.length) {
+        context.fillStyle = mutedColor;
+        context.textAlign = "center";
+        context.fillText(state.header ? "No events match the current filters." : "Load a trace artifact to begin.", width / 2, height / 2);
+        canvas.setAttribute("aria-label", state.header ? "No events match the current filters" : "No trace loaded");
+        return;
+      }
+
+      const values = state.filtered.map(eventAxisValue);
+      let minimum;
+      let maximum;
+      if (elements.axis.value === "time") {
+        minimum = state.timeRange.start;
+        maximum = state.timeRange.end;
+      } else {
+        minimum = values[0];
+        maximum = values[0];
+        for (const value of values) {
+          if (value < minimum) minimum = value;
+          if (value > maximum) maximum = value;
+        }
+      }
+      const range = maximum - minimum;
+      function xFor(value) {
+        if (range === 0n) return plotLeft + plotWidth / 2;
+        const offset = value - minimum;
+        return plotLeft + Math.max(0, Math.min(1, Number(offset) / Number(range))) * plotWidth;
+      }
+
+      context.strokeStyle = borderColor;
+      context.lineWidth = 1;
+      context.textAlign = "right";
+      state.lanes.forEach((lane, laneIndex) => {
+        const y = top + laneIndex * laneHeight + laneHeight / 2;
+        context.beginPath();
+        context.moveTo(plotLeft, y);
+        context.lineTo(plotRight, y);
+        context.stroke();
+        context.fillStyle = lane.kind === "task" ? textColor : mutedColor;
+        context.fillText(truncateCanvasText(context, lane.label, labelWidth - 5), labelWidth, y);
+      });
+
+      let tickCount;
+      let staggerTickEndpoints = false;
+      const preferredTickCount = width < 450 ? 3 : 5;
+      if (elements.axis.value === "time") {
+        const tickLayout = TRACE_TIME.timeTickLayout(
+          state.timeRange,
+          preferredTickCount,
+          plotWidth,
+          value => context.measureText(formatDisplayedTime(value)).width
+        );
+        tickCount = tickLayout.count;
+        staggerTickEndpoints = tickLayout.staggerEndpoints;
+      } else {
+        tickCount = range === 0n ? 1 : preferredTickCount;
+        if (range > 0n && range < BigInt(tickCount - 1)) {
+          tickCount = Number(range) + 1;
+        }
+      }
+      context.textBaseline = "top";
+      for (let index = 0; index < tickCount; index += 1) {
+        const tickValue = tickCount === 1 ? minimum : minimum + (range * BigInt(index)) / BigInt(tickCount - 1);
+        const x = xFor(tickValue);
+        context.strokeStyle = borderColor;
+        context.beginPath();
+        context.moveTo(x, top - 5);
+        context.lineTo(x, height - bottom + 8);
+        context.stroke();
+        context.fillStyle = mutedColor;
+        context.textAlign = tickCount === 1
+          ? "center"
+          : index === 0
+          ? "left"
+          : (index === tickCount - 1 ? "right" : "center");
+        const tickLabel = elements.axis.value === "time"
+          ? formatDisplayedTime(tickValue)
+          : `#${tickValue.toString()}`;
+        const tickLabelY = height - bottom + 14 +
+          (staggerTickEndpoints && index === tickCount - 1 ? 16 : 0);
+        context.fillText(tickLabel, x, tickLabelY);
+      }
+
+      const stackTotals = new Map();
+      for (const event of state.filtered) {
+        const key = `${event._laneIndex}:${eventAxisValue(event).toString()}`;
+        stackTotals.set(key, (stackTotals.get(key) ?? 0) + 1);
+      }
+      const stackIndexes = new Map();
+      const selectedEvent = state.filtered[state.selectedIndex] ?? null;
+      for (const event of state.filtered) {
+        const axisValue = eventAxisValue(event);
+        const x = xFor(axisValue);
+        const key = `${event._laneIndex}:${axisValue.toString()}`;
+        const stackIndex = stackIndexes.get(key) ?? 0;
+        stackIndexes.set(key, stackIndex + 1);
+        const stackTotal = stackTotals.get(key) ?? 1;
+        const spread = stackTotal === 1 ? 0 : Math.min(5, 20 / (stackTotal - 1));
+        const y = top + event._laneIndex * laneHeight + laneHeight / 2 + (stackIndex - (stackTotal - 1) / 2) * spread;
+        drawMarker(context, event, x, y, event === selectedEvent);
+        if (state.hitRegions.length < MAX_HIT_REGIONS) {
+          state.hitRegions.push({ event, x, y });
+        }
+      }
+
+      const axisName = elements.axis.value === "time"
+        ? `${selectedTimeBasis()} virtual time bounded by the full run`
+        : "event sequence";
+      canvas.setAttribute("aria-label", `Timeline of ${state.filtered.length} filtered events across ${state.lanes.length} lanes, positioned by ${axisName}. Use Previous event and Next event to inspect marks without a pointer.`);
+    }
+
+    function renderSelection() {
+      const event = state.filtered[state.selectedIndex] ?? null;
+      elements.previous.disabled = state.selectedIndex <= 0;
+      elements.next.disabled = state.selectedIndex < 0 || state.selectedIndex >= state.filtered.length - 1;
+      elements.details.replaceChildren();
+      if (!event) {
+        elements.selectionPosition.textContent = "No event selected";
+        elements.fields.textContent = state.header
+          ? "No event matches the current filters."
+          : "Select a timeline mark to inspect its exact values.";
+        return;
+      }
+      elements.selectionPosition.textContent = `${state.selectedIndex + 1} of ${state.filtered.length}`;
+      const timeLabel = selectedTimeBasis() === TRACE_TIME.RELATIVE
+        ? "Virtual time (from run start)"
+        : "Virtual time (absolute)";
+      appendDefinitionList(elements.details, [
+        ["Sequence", event.sequence],
+        [timeLabel, formatDisplayedTime(event._atNs)],
+        ["Absolute virtual time (exact ns)", event.at_ns],
+        ["Type", event.type],
+        ["Family", event.family],
+        ["Task", event.task],
+        ["Severity", severityLabel(event.severity)]
+      ], true);
+      elements.fields.textContent = safeJson(event.fields);
+    }
+
+    function selectEvent(event) {
+      const index = state.filtered.indexOf(event);
+      if (index < 0) return;
+      state.selectedIndex = index;
+      renderTimeline();
+      renderSelection();
+    }
+
+    elements.file.addEventListener("change", async () => {
+      const file = elements.file.files?.[0];
+      if (!file) return;
+      elements.error.hidden = true;
+      if (file.size > MAX_FILE_BYTES) {
+        showError(`Trace is ${file.size.toLocaleString()} bytes; the standalone viewer limit is ${MAX_FILE_BYTES.toLocaleString()} bytes.`);
+        return;
+      }
+      elements.status.textContent = `Reading ${file.name}…`;
+      try {
+        loadBinaryArtifact(await file.arrayBuffer(), file.name);
+      } catch (error) {
+        showError(error instanceof Error ? error.message : String(error));
+      }
+    });
+
+    elements.sample.addEventListener("click", loadEmbeddedSample);
+    elements.axis.addEventListener("change", () => {
+      updateAxisDescription();
+      renderTimeline();
+    });
+    elements.timeBasis.addEventListener("change", () => {
+      updateAxisDescription();
+      renderSummary();
+      renderTimeline();
+      renderSelection();
+    });
+    elements.severity.addEventListener("change", applyFilters);
+    elements.search.addEventListener("input", () => {
+      window.clearTimeout(state.searchTimer);
+      state.searchTimer = window.setTimeout(applyFilters, 100);
+    });
+    elements.reset.addEventListener("click", () => {
+      elements.axis.value = "sequence";
+      elements.timeBasis.value = TRACE_TIME.RELATIVE;
+      elements.severity.value = "5";
+      elements.search.value = "";
+      state.selectedFamilies = new Set(state.events.map(event => event.family));
+      updateAxisDescription();
+      renderFamilyOptions();
+      applyFilters();
+    });
+    elements.previous.addEventListener("click", () => {
+      if (state.selectedIndex > 0) {
+        state.selectedIndex -= 1;
+        renderTimeline();
+        renderSelection();
+      }
+    });
+    elements.next.addEventListener("click", () => {
+      if (state.selectedIndex >= 0 && state.selectedIndex < state.filtered.length - 1) {
+        state.selectedIndex += 1;
+        renderTimeline();
+        renderSelection();
+      }
+    });
+    elements.canvas.addEventListener("click", event => {
+      const bounds = elements.canvas.getBoundingClientRect();
+      const x = event.clientX - bounds.left;
+      const y = event.clientY - bounds.top;
+      let closest = null;
+      let closestDistance = 13 * 13;
+      for (const region of state.hitRegions) {
+        const distance = (region.x - x) ** 2 + (region.y - y) ** 2;
+        if (distance <= closestDistance) {
+          closest = region.event;
+          closestDistance = distance;
+        }
+      }
+      if (closest) selectEvent(closest);
+    });
+
+    const resizeObserver = new ResizeObserver(() => renderTimeline());
+    resizeObserver.observe(elements.canvasWrap);
+    loadEmbeddedSample();
+  </script>
+</body>
+</html>

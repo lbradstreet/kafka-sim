@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    package="dst_trace_sbe"
+    id="1"
+    version="1"
+    semanticVersion="2.0.0"
+    description="Binary artifact and event schema for dst-runtime traces."
+    byteOrder="littleEndian">
+
+    <types>
+        <composite name="messageHeader" description="Standard SBE message header.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="TaskId" description="Generation-tagged task identifier.">
+            <type name="slot" primitiveType="uint32"/>
+            <type name="generation" primitiveType="uint32"/>
+        </composite>
+
+        <composite name="varUtf8Encoding" description="UTF-8 bytes prefixed by an unsigned 32-bit length.">
+            <type name="length" primitiveType="uint32" maxValue="2147483647"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+    </types>
+
+    <!-- Template IDs 1 and 3 are retired. Their version-0 shapes must never be reused. -->
+    <sbe:message name="ArtifactHeader" id="4" description="One complete trace artifact's scalar metadata.">
+        <field name="artifactSchema" id="1" type="uint32"/>
+        <field name="runtimeReproductionSchema" id="2" type="uint32"/>
+        <field name="determinismCheckpointSchema" id="3" type="uint32"/>
+        <field name="traceSchema" id="4" type="uint32"/>
+        <field name="rngVersion" id="5" type="uint32"/>
+        <field name="seed" id="6" type="uint64"/>
+        <field name="maxTasks" id="7" type="uint64"/>
+        <field name="maxTimers" id="8" type="uint64"/>
+        <field name="maxStepsPerRun" id="11" type="uint64"/>
+        <field name="maxTimePresent" id="12" type="uint8"/>
+        <field name="maxTimeNs" id="13" type="uint64"/>
+        <field name="retainedEventCount" id="14" type="uint64"/>
+        <field name="retentionMode" id="15" type="uint8"/>
+        <field name="capacityUnit" id="16" type="uint8"/>
+        <field name="prefixCapacity" id="17" type="uint64"/>
+        <field name="tailCapacity" id="18" type="uint64"/>
+        <field name="retainedBytes" id="19" type="uint64"/>
+        <field name="samplingMode" id="20" type="uint8"/>
+        <field name="samplingAlgorithmVersion" id="21" type="uint32"/>
+        <field name="samplingPeriod" id="22" type="uint64"/>
+        <field name="samplingPhase" id="23" type="uint64"/>
+        <field name="fingerprintScope" id="24" type="uint8"/>
+        <field name="droppedEvents" id="25" type="uint64"/>
+        <field name="lastSequencePresent" id="26" type="uint8"/>
+        <field name="lastSequence" id="27" type="uint64"/>
+        <field name="orderingViolationPresent" id="28" type="uint8"/>
+        <field name="previousSequence" id="29" type="uint64"/>
+        <field name="rejectedSequence" id="30" type="uint64"/>
+        <field name="traceFingerprint" id="31" type="uint64"/>
+        <field name="nowNs" id="32" type="uint64"/>
+        <field name="totalSteps" id="33" type="uint64"/>
+        <field name="nextEnqueueSequence" id="34" type="uint64"/>
+        <field name="nextTimerSequence" id="35" type="uint64"/>
+        <field name="nextTimerId" id="36" type="uint64"/>
+        <field name="readyTasks" id="37" type="uint64"/>
+        <field name="liveTimers" id="38" type="uint64"/>
+        <field name="liveTasks" id="39" type="uint64"/>
+        <field name="stopped" id="40" type="uint8"/>
+        <field name="randomStreamCount" id="41" type="uint32"/>
+        <field name="taskCount" id="42" type="uint32"/>
+        <field name="startTimeNs" id="43" type="uint64"/>
+        <data name="driver" id="100" type="varUtf8Encoding"/>
+        <data name="outcome" id="101" type="varUtf8Encoding"/>
+    </sbe:message>
+
+    <sbe:message name="RandomStreamState" id="2" description="One deterministic RNG stream checkpoint.">
+        <field name="streamTag" id="1" type="uint64"/>
+        <field name="state" id="2" type="uint64"/>
+        <field name="draws" id="3" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="TaskSnapshot" id="5" description="One live task in the terminal runtime snapshot.">
+        <field name="task" id="1" type="TaskId"/>
+        <field name="state" id="2" type="uint8"/>
+    </sbe:message>
+
+    <sbe:message name="RuntimeStarted" id="100">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="seed" id="10" type="uint64"/>
+    </sbe:message>
+
+    <!-- Event template ID 101 is retired. Its version-0 shape must never be reused. -->
+    <sbe:message name="TaskSpawned" id="120">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="parentPresent" id="11" type="uint8"/>
+        <field name="parent" id="12" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TaskEnqueued" id="102">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="readySequence" id="11" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="TaskPollStarted" id="103">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TaskPending" id="104">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TaskCompleted" id="105">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TaskCancelled" id="106">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="reason" id="11" type="uint8"/>
+    </sbe:message>
+
+    <sbe:message name="TaskPanicked" id="107">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="messageTruncated" id="11" type="uint8"/>
+        <data name="message" id="100" type="varUtf8Encoding"/>
+    </sbe:message>
+
+    <sbe:message name="TaskDropPanicked" id="108">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="messageTruncated" id="11" type="uint8"/>
+        <data name="message" id="100" type="varUtf8Encoding"/>
+    </sbe:message>
+
+    <sbe:message name="WakerPanicked" id="109">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="task" id="10" type="TaskId"/>
+        <field name="messageTruncated" id="11" type="uint8"/>
+        <data name="message" id="100" type="varUtf8Encoding"/>
+    </sbe:message>
+
+    <sbe:message name="TimerScheduled" id="110">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="timer" id="10" type="uint64"/>
+        <field name="task" id="11" type="TaskId"/>
+        <field name="deadlineNs" id="12" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="TimerFired" id="111">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="timer" id="10" type="uint64"/>
+        <field name="task" id="11" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TimerCancelled" id="112">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="timer" id="10" type="uint64"/>
+        <field name="task" id="11" type="TaskId"/>
+    </sbe:message>
+
+    <sbe:message name="TimeAdvanced" id="113">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="fromNs" id="10" type="uint64"/>
+        <field name="toNs" id="11" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="RuntimeStalled" id="114">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="liveTasks" id="10" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="BudgetExhausted" id="115">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="steps" id="10" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="RuntimeStopped" id="116">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="RandomChoiceU64" id="117">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="streamTag" id="10" type="uint64"/>
+        <field name="drawsBefore" id="11" type="uint64"/>
+        <field name="drawsAfter" id="12" type="uint64"/>
+        <field name="value" id="13" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="RandomChoiceBelow" id="118">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="streamTag" id="10" type="uint64"/>
+        <field name="drawsBefore" id="11" type="uint64"/>
+        <field name="drawsAfter" id="12" type="uint64"/>
+        <field name="value" id="13" type="uint64"/>
+        <field name="upperExclusive" id="14" type="uint64"/>
+    </sbe:message>
+
+    <sbe:message name="RandomChoiceBoolRatio" id="119">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="atNs" id="2" type="uint64"/>
+        <field name="streamTag" id="10" type="uint64"/>
+        <field name="drawsBefore" id="11" type="uint64"/>
+        <field name="drawsAfter" id="12" type="uint64"/>
+        <field name="value" id="13" type="uint64"/>
+        <field name="numerator" id="14" type="uint64"/>
+        <field name="denominator" id="15" type="uint64"/>
+    </sbe:message>
+</sbe:messageSchema>

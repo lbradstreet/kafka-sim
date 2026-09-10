@@ -1,0 +1,518 @@
+[
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 11791,
+      "next_timer_id": 4247,
+      "next_timer_sequence": 4247,
+      "now_ns": 3868693840481781860,
+      "random": [
+        {
+          "draws": 2931,
+          "seed": 163672943875978691,
+          "state": 8605290892172761650,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 2291583484003655504,
+          "state": 2291583484003655504,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 3430,
+          "seed": 12992667718260483668,
+          "state": 10347061732581861298,
+          "stream": "Workload"
+        },
+        {
+          "draws": 0,
+          "seed": 11566085360551830624,
+          "state": 11566085360551830624,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 15606
+    },
+    "legacy_sha256": "003850262dcf2a244f7eab079590652048b446ab32a861a79ee33a2f52ea8023",
+    "seed": 0,
+    "variant": "Clean"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 32369,
+      "next_timer_id": 10497,
+      "next_timer_sequence": 10497,
+      "now_ns": 3934012718676812691,
+      "random": [
+        {
+          "draws": 8986,
+          "seed": 17949820011777815103,
+          "state": 11556601067189726049,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 12985350256848742786,
+          "state": 12985350256848742786,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 7611,
+          "seed": 10779783536327148873,
+          "state": 8136150675460016544,
+          "stream": "Workload"
+        },
+        {
+          "draws": 1050,
+          "seed": 8846366436930308581,
+          "state": 7660022888789719047,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 42260
+    },
+    "legacy_sha256": "ec58c94bcf6aca8f2ebc25cc6844e15dad5126a674ba341c47ac205cc9ada14a",
+    "seed": 1,
+    "variant": "FiniteFault"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 8191,
+      "next_timer_id": 2895,
+      "next_timer_sequence": 2895,
+      "now_ns": 500735109664991213,
+      "random": [
+        {
+          "draws": 1596,
+          "seed": 9012907921295485517,
+          "state": 16064102883502374201,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 11809630064794019076,
+          "state": 11809630064794019076,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 3454,
+          "seed": 2369082960380459374,
+          "state": 15086215606524878020,
+          "stream": "Workload"
+        },
+        {
+          "draws": 790,
+          "seed": 3905635370813294775,
+          "state": 8459234665878909317,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 10738
+    },
+    "legacy_sha256": "1c94dbb0b52e955f75644744f237a5fb7314f938200fc53d7fe291857cf1cd98",
+    "seed": 2,
+    "variant": "Isolation"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 26898,
+      "next_timer_id": 8643,
+      "next_timer_sequence": 8643,
+      "now_ns": 2583463796097040255,
+      "random": [
+        {
+          "draws": 7105,
+          "seed": 7038496136574659652,
+          "state": 9464059769258749721,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 8910665562545938806,
+          "state": 8910665562545938806,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 7377,
+          "seed": 10691910176436247446,
+          "state": 15058900281825653947,
+          "stream": "Workload"
+        },
+        {
+          "draws": 876,
+          "seed": 17356824401138751735,
+          "state": 6247718177683648723,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 35010
+    },
+    "legacy_sha256": "cb3cf77c127c76da87713407ccc5e33f6e60ae10b09bf76cf052392fb23ada5f",
+    "seed": 3,
+    "variant": "FiniteFault"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 28197,
+      "next_timer_id": 8843,
+      "next_timer_sequence": 8843,
+      "now_ns": 328514180768107599,
+      "random": [
+        {
+          "draws": 7274,
+          "seed": 13789262700550182605,
+          "state": 6027503059351896959,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 3855060467892970117,
+          "state": 3855060467892970117,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 8280,
+          "seed": 1360933231330838412,
+          "state": 7290212055638675140,
+          "stream": "Workload"
+        },
+        {
+          "draws": 752,
+          "seed": 17340328244048603437,
+          "state": 12941878100152362717,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 36521
+    },
+    "legacy_sha256": "e3773e1bf450c6fed0e476264e9cd75448e83030d850d0939ea7a4f201749437",
+    "seed": 4,
+    "variant": "Isolation"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 9023,
+      "next_timer_id": 3058,
+      "next_timer_sequence": 3058,
+      "now_ns": 3697601487216321490,
+      "random": [
+        {
+          "draws": 1671,
+          "seed": 13399142899486269070,
+          "state": 8506977846584118177,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 15462325735386629891,
+          "state": 15462325735386629891,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 4103,
+          "seed": 3035862708912062850,
+          "state": 17672539538282100245,
+          "stream": "Workload"
+        },
+        {
+          "draws": 0,
+          "seed": 15434343704610415993,
+          "state": 15434343704610415993,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 11703
+    },
+    "legacy_sha256": "61f9cabcb1dc9d3c44de8310fd372bfbfae3a6505ecb4362b94a02af2125d362",
+    "seed": 5,
+    "variant": "Clean"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 14091,
+      "next_timer_id": 4483,
+      "next_timer_sequence": 4483,
+      "now_ns": 666218315296954513,
+      "random": [
+        {
+          "draws": 2944,
+          "seed": 5370878305909279230,
+          "state": 14447836315731229566,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 14003666631720598171,
+          "state": 14003666631720598171,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 5676,
+          "seed": 178768299970323569,
+          "state": 17904616279047407117,
+          "stream": "Workload"
+        },
+        {
+          "draws": 780,
+          "seed": 3803395666469761901,
+          "state": 5030311210560701289,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 18119
+    },
+    "legacy_sha256": "fe97b3199165999621f39b82e9edb1aa9077d5a0350178ff7b47879a47358608",
+    "seed": 6,
+    "variant": "Isolation"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 9582,
+      "next_timer_id": 3048,
+      "next_timer_sequence": 3048,
+      "now_ns": 1053360707124569067,
+      "random": [
+        {
+          "draws": 1736,
+          "seed": 8637667174971347900,
+          "state": 6922202429695033892,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 18307916574309297664,
+          "state": 18307916574309297664,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 4552,
+          "seed": 13066284935728622347,
+          "state": 18429063149959430259,
+          "stream": "Workload"
+        },
+        {
+          "draws": 584,
+          "seed": 12745518337628843621,
+          "state": 11488362213228625485,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 12267
+    },
+    "legacy_sha256": "8d85aa95201dffe59e120b2ee74c6e68517631a972f2571568d65eaf19a4bdb7",
+    "seed": 7,
+    "variant": "FiniteFault"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 23186,
+      "next_timer_id": 7543,
+      "next_timer_sequence": 7543,
+      "now_ns": 4439343256833771722,
+      "random": [
+        {
+          "draws": 6175,
+          "seed": 16462595970884863618,
+          "state": 4654475942276990221,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 18318207406756267999,
+          "state": 18318207406756267999,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 6056,
+          "seed": 9754039666417602509,
+          "state": 6319917592855928981,
+          "stream": "Workload"
+        },
+        {
+          "draws": 0,
+          "seed": 1000432571662222846,
+          "state": 1000432571662222846,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 30277
+    },
+    "legacy_sha256": "82530e50a518a87e4c8b664871992a42f6a8d8f1be5d2d97cb2344570ec426ef",
+    "seed": 8,
+    "variant": "Clean"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 5964,
+      "next_timer_id": 2250,
+      "next_timer_sequence": 2250,
+      "now_ns": 2766115258180773098,
+      "random": [
+        {
+          "draws": 1126,
+          "seed": 14952525058911176826,
+          "state": 13223536314984746200,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 13214067445788765430,
+          "state": 13214067445788765430,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 2626,
+          "seed": 8392169586477943563,
+          "state": 7603653498594892405,
+          "stream": "Workload"
+        },
+        {
+          "draws": 486,
+          "seed": 14006670014540537732,
+          "state": 2284106019039965026,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 7947
+    },
+    "legacy_sha256": "573d93eba05ca8e079bb5e28956d19c957abf52ff38ec5157f259381ba12b570",
+    "seed": 9,
+    "variant": "FiniteFault"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 15147,
+      "next_timer_id": 4938,
+      "next_timer_sequence": 4938,
+      "now_ns": 1631205606284720785,
+      "random": [
+        {
+          "draws": 3427,
+          "seed": 197650147926119930,
+          "state": 243387851697005337,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 1134444736421782833,
+          "state": 1134444736421782833,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 5385,
+          "seed": 6930656200891893449,
+          "state": 9015680950927957126,
+          "stream": "Workload"
+        },
+        {
+          "draws": 996,
+          "seed": 10414912151218036810,
+          "state": 2332522792039932414,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 19608
+    },
+    "legacy_sha256": "04d434025a4b189dc7e5dc9d835d325dad9e85b92ce05faac0bdc816796ff368",
+    "seed": 36,
+    "variant": "Isolation"
+  },
+  {
+    "checkpoint": {
+      "live_tasks": 0,
+      "live_timers": 0,
+      "next_enqueue_sequence": 8087,
+      "next_timer_id": 3286,
+      "next_timer_sequence": 3286,
+      "now_ns": 4461284104527608561,
+      "random": [
+        {
+          "draws": 1935,
+          "seed": 13742173499851159303,
+          "state": 11819436733616495042,
+          "stream": "Schedule"
+        },
+        {
+          "draws": 0,
+          "seed": 8527504204289282944,
+          "state": 8527504204289282944,
+          "stream": "Scenario"
+        },
+        {
+          "draws": 2485,
+          "seed": 9494856857030346528,
+          "state": 6072285657307299577,
+          "stream": "Workload"
+        },
+        {
+          "draws": 0,
+          "seed": 1424123253649339445,
+          "state": 1424123253649339445,
+          "stream": "Fault"
+        }
+      ],
+      "ready_tasks": 0,
+      "schema_version": 3,
+      "stopped": true,
+      "total_steps": 10945
+    },
+    "legacy_sha256": "e273b898896218573eae693a2a1ac45f59ac5d81ecb551c0f6e7bdf23a63e484",
+    "seed": 128,
+    "variant": "Clean"
+  }
+]

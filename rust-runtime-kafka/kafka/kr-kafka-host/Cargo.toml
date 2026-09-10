@@ -1,0 +1,33 @@
+[package]
+name = "kr-kafka-host"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Bounded Kafka host transport security and control work"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+test-support = []
+
+[dependencies]
+kr-runtime = { path = "../.." }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-kafka-client = { path = "../kr-kafka-client" }
+rustls = { version = "=0.23.43", default-features = false, features = ["std", "ring", "tls12"] }
+rustls-native-certs = "=0.8.4"
+ring = "=0.17.14"
+base64 = "=0.22.1"
+zeroize = "=1.9.0"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+kr-runtime-io-uring = { path = "../../io/kr-runtime-io-uring" }
+kr-runtime-io-readiness = { path = "../../io/kr-runtime-io-readiness" }
+
+[dev-dependencies]
+kr-kafka-protocol = { path = "../kr-kafka-protocol" }
+kr-runtime = { path = "../..", features = ["test-support"] }
+kr-runtime-io = { path = "../../io/kr-runtime-io", features = ["test-support"] }
+
+[lints]
+workspace = true

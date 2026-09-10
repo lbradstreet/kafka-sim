@@ -1,0 +1,20 @@
+{
+  "bootstrap": "localhost:9092",
+  "topic": "kr-benchmark",
+  "rate": 100000,
+  "records": 1000000,
+  "record_bytes": 1024,
+  "seed": 1,
+  "pattern": "incompressible",
+  "routing": "many",
+  "partitions": 16,
+  "compression": "none",
+  "linger_us": 1000,
+  "batch_bytes": 131072,
+  "request_bytes": 1048576,
+  "input_bytes": 67108864,
+  "delivery_timeout_ms": 120000,
+  "request_timeout_ms": 30000,
+  "backend": "readiness",
+  "security": "plaintext"
+}

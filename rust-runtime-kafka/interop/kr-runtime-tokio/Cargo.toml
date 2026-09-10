@@ -1,0 +1,18 @@
+[package]
+name = "kr-runtime-tokio"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "A tokio-shaped facade over the kr-runtime runtimes for deterministic simulation"
+license = "Apache-2.0 OR MIT"
+
+[dependencies]
+kr-runtime = { path = "../.." }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+tokio = { version = "1", features = ["io-util", "macros", "net", "rt", "sync", "time"] }
+
+[dev-dependencies]
+kr-runtime = { path = "../..", features = ["test-support"] }
+
+[lints]
+workspace = true

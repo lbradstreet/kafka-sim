@@ -1,0 +1,11 @@
+[package]
+name = "kr-shared-bytes"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Immutable shared byte spans with explicit allocation ownership"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[lints]
+workspace = true

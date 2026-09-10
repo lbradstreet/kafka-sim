@@ -1,0 +1,22 @@
+[package]
+name = "kr-runtime-ring"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Owned asynchronous durable record rings and crash-safe storage engines"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+test-support = []
+
+[dependencies]
+crc32c = "=0.6.8"
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-runtime = { path = "../.." }
+
+[dev-dependencies]
+kr-runtime = { path = "../..", features = ["test-support"] }
+
+[lints]
+workspace = true

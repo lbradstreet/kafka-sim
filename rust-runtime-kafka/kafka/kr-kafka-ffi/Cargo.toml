@@ -1,0 +1,32 @@
+[package]
+name = "kr-kafka-ffi"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Audited versioned C adapter for the bounded Kafka producer"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[features]
+# Explicit integration-test artifact only; never enabled by default.
+binding-test-hooks = ["dep:kr-runtime-io", "kr-kafka-producer/binding-test-hooks"]
+
+[dependencies]
+kr-kafka-producer-host = { path = "../kr-kafka-producer-host" }
+kr-kafka-producer = { path = "../kr-kafka-producer" }
+kr-kafka-record = { path = "../kr-kafka-record" }
+kr-runtime = { path = "../.." }
+kr-shared-bytes = { path = "../../bytes/kr-shared-bytes" }
+kr-runtime-io = { path = "../../io/kr-runtime-io", optional = true }
+
+[dev-dependencies]
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "deny"

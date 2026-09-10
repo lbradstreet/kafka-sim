@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    package="generic_sbe_fixture"
+    id="42"
+    version="2"
+    semanticVersion="1.0.0"
+    description="Cross-feature fixture for the generic JavaScript SBE decoder."
+    byteOrder="bigEndian">
+
+    <types>
+        <composite name="messageHeader">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="groupSizeEncoding">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint16"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+
+        <composite name="rawDataEncoding">
+            <type name="length" primitiveType="uint16"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
+        </composite>
+
+        <composite name="Point">
+            <type name="x" primitiveType="int16"/>
+            <type name="y" primitiveType="int16"/>
+        </composite>
+
+        <enum name="Side" encodingType="uint8">
+            <validValue name="Buy">1</validValue>
+            <validValue name="Sell">2</validValue>
+        </enum>
+
+        <set name="Flags" encodingType="uint8">
+            <choice name="urgent">0</choice>
+            <choice name="replay">2</choice>
+        </set>
+
+        <type name="Symbol" primitiveType="char" length="4" characterEncoding="US-ASCII"/>
+        <type name="OptionalCounter" primitiveType="uint64" presence="optional"/>
+        <type name="Venue" primitiveType="uint16" presence="constant">513</type>
+        <type name="Market" primitiveType="char" length="4" presence="constant" characterEncoding="US-ASCII">XNAS</type>
+        <type name="OptionalCode" primitiveType="char" presence="optional" characterEncoding="US-ASCII"/>
+    </types>
+
+    <sbe:message name="Snapshot" id="7">
+        <field name="sequence" id="1" type="uint64"/>
+        <field name="symbol" id="2" type="Symbol"/>
+        <field name="point" id="3" type="Point"/>
+        <field name="side" id="4" type="Side"/>
+        <field name="flags" id="5" type="Flags"/>
+        <field name="optionalCounter" id="6" type="OptionalCounter" sinceVersion="1"/>
+        <field name="venue" id="7" type="Venue"/>
+        <field name="market" id="8" type="Market"/>
+        <field name="optionalCode" id="9" type="OptionalCode" sinceVersion="2"/>
+        <field name="constantSide" id="10" type="Side" presence="constant" valueRef="Side.Buy"/>
+        <group name="entries" id="20" dimensionType="groupSizeEncoding">
+            <field name="price" id="21" type="int32"/>
+            <field name="quantity" id="22" type="uint64"/>
+            <field name="side" id="23" type="Side"/>
+            <data name="note" id="24" type="varDataEncoding"/>
+        </group>
+        <data name="memo" id="30" type="varDataEncoding"/>
+        <data name="blob" id="31" type="rawDataEncoding"/>
+    </sbe:message>
+</sbe:messageSchema>

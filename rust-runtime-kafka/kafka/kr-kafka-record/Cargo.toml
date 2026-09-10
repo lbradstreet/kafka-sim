@@ -1,0 +1,24 @@
+[package]
+name = "kr-kafka-record"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Bounded streaming Kafka magic-2 record batches"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+default = ["zstd"]
+zstd = ["dep:zstd-safe"]
+
+[[example]]
+name = "compression_memory"
+required-features = ["zstd"]
+
+[dependencies]
+futures-util = { version = "=0.3.32", default-features = false }
+kr-kafka-protocol = { path = "../kr-kafka-protocol" }
+zstd-safe = { version = "=7.2.4", default-features = false, optional = true }
+
+[lints]
+workspace = true

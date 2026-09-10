@@ -1,0 +1,24 @@
+[package]
+name = "kr-kafka-client"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Shared Kafka transport, control wire codec, and connection contracts"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+request-observation = []
+
+[dependencies]
+kr-runtime = { path = "../.." }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-kafka-protocol = { path = "../kr-kafka-protocol" }
+kr-shared-bytes = { path = "../../bytes/kr-shared-bytes" }
+
+[dev-dependencies]
+allocation-counter = "=0.8.1"
+kr-runtime = { path = "../..", features = ["test-support"] }
+
+[lints]
+workspace = true

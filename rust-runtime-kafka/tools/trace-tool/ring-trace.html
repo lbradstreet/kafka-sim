@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ring trace explorer</title>
+    <link rel="stylesheet" href="./trace-viewer.css">
+    <link rel="stylesheet" href="./ring-trace.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Deterministic diagnostic trace</p>
+        <h1 id="scenario">Ring trace</h1>
+        <p
+          class="meta-line"><span id="source-test">—</span> · <span id="provider">—</span></p>
+        <dl class="runtime-line" aria-label="Runtime metadata">
+          <div>
+            <dt>Seed</dt>
+            <dd id="seed">—</dd>
+          </div>
+          <div>
+            <dt>Virtual time</dt>
+            <dd id="runtime-time">—</dd>
+          </div>
+          <div>
+            <dt>Steps</dt>
+            <dd id="runtime-steps">—</dd>
+          </div>
+        </dl>
+        <div class="trace-loader" role="group" aria-label="Ring trace artifact">
+          <label for="trace-file">Load generated trace</label>
+          <input id="trace-file" type="file"
+            accept=".json,.js,application/json,text/javascript">
+          <button id="bundled-sample" type="button"
+            disabled>Use bundled sample</button>
+          <span class="trace-source" id="trace-source"
+            aria-live="polite">Bundled sample</span>
+        </div>
+        <p class="trace-error" id="error" role="alert" hidden></p>
+      </header>
+
+      <section aria-labelledby="timeline-heading">
+        <div class="section-heading">
+          <h2 id="timeline-heading">Operations by virtual time</h2>
+          <p
+            class="axis-note">Each row is one operation; sequence is diagnostic presentation order. Use ← and → to move between steps.</p>
+        </div>
+        <div class="legend" aria-label="Operation outcome legend">
+          <span
+            class="legend-item accepted"><i class="swatch accepted"></i>Success</span>
+          <span
+            class="legend-item rejected"><i class="swatch rejected"></i>Rejected</span>
+          <span
+            class="legend-item unknown"><i class="swatch unknown"></i>Unknown</span>
+          <span
+            class="legend-item crash"><i class="swatch crash"></i>Crash</span>
+          <span
+            class="legend-item recovered"><i class="swatch recovered"></i>Recovered</span>
+        </div>
+        <svg id="timeline" role="group"
+          aria-labelledby="timeline-title timeline-desc">
+          <title
+            id="timeline-title">Ring operations aligned by virtual time</title>
+          <desc
+            id="timeline-desc">Select a mark to inspect that operation. Press Left Arrow or Right Arrow to inspect adjacent diagnostic steps.</desc>
+        </svg>
+        <p class="caption" id="timeline-caption">—</p>
+
+        <div class="stepper" aria-label="Selected diagnostic step">
+          <button id="previous" type="button"
+            aria-keyshortcuts="ArrowLeft">Previous</button>
+          <div class="range-control">
+            <label
+              for="step-range"><span>Diagnostic step</span><output id="step-output" for="step-range">—</output></label>
+            <input id="step-range" type="range" min="0" max="0" value="0"
+              step="1">
+          </div>
+          <button id="next" type="button"
+            aria-keyshortcuts="ArrowRight">Next</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="cursor-heading">
+        <div class="section-heading">
+          <h2 id="cursor-heading">Logical cursor state</h2>
+          <p class="axis-note" id="cursor-values">—</p>
+        </div>
+        <div class="legend" aria-label="Cursor chart legend">
+          <span
+            class="legend-item accepted"><i class="swatch accepted"></i>Accepted head</span>
+          <span
+            class="legend-item accepted"><i class="swatch accepted dash"></i>Accepted tail</span>
+          <span
+            class="legend-item durable"><i class="swatch durable"></i>Durable head</span>
+          <span
+            class="legend-item durable"><i class="swatch durable dash"></i>Durable tail</span>
+        </div>
+        <svg id="cursor-chart" role="img"
+          aria-labelledby="cursor-title cursor-desc">
+          <title
+            id="cursor-title">Accepted and durable ring cursors by diagnostic sequence</title>
+          <desc
+            id="cursor-desc">Stepped lines distinguish accepted state from state made visible by a durability fence.</desc>
+        </svg>
+        <p
+          class="caption">Absolute cursors continue increasing when physical storage wraps.</p>
+      </section>
+
+      <section aria-labelledby="physical-heading">
+        <div class="section-heading">
+          <h2 id="physical-heading">Physical ring</h2>
+          <p class="axis-note" id="physical-capacity">—</p>
+        </div>
+        <div class="physical-values" id="physical-values"
+          aria-live="polite"></div>
+        <svg id="physical-strip" role="img"
+          aria-labelledby="physical-title physical-desc">
+          <title id="physical-title">Physical byte allocation</title>
+          <desc
+            id="physical-desc">Protected bytes may wrap around the end of the fixed allocation. Equal head and tail offsets can mean full or empty; the protected-byte count disambiguates them.</desc>
+        </svg>
+        <p class="full-circle-note" id="full-circle-note" hidden></p>
+        <p class="recovery-note" id="recovery-note" hidden></p>
+        <p class="caption" id="physical-observation">—</p>
+      </section>
+
+      <article class="selected-detail" aria-labelledby="detail-heading"
+        aria-live="polite">
+        <div class="detail-context">
+          <div class="detail-title">
+            <strong id="detail-heading">Selected step</strong>
+            <span class="outcome" id="detail-outcome">—</span>
+          </div>
+          <p class="detail-description" id="detail-description">—</p>
+          <p class="detail-summary" id="detail-summary">—</p>
+          <div class="detail-meta" id="detail-meta"></div>
+        </div>
+        <pre class="json-dump" id="detail-fields"
+          aria-label="Selected step fields">{}</pre>
+      </article>
+    </main>
+
+    <script src="./trace-viewer-core.js"></script>
+    <script src="./ring-trace-model.js"></script>
+    <script src="./ring-trace-data.js"></script>
+    <script src="./trace-viewer-ui.js"></script>
+    <script src="./ring-trace-viewer.js"></script>
+  </body>
+</html>

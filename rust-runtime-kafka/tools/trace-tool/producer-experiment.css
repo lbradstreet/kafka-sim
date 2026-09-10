@@ -1,0 +1,251 @@
+:root {
+  --variant-1: light-dark(#1766a1, #7cbdf0);
+  --variant-2: light-dark(#a44512, #f3ae7b);
+  --variant-3: light-dark(#00745d, #6ad8b8);
+  --variant-4: light-dark(#8945ad, #d1a1ed);
+  --variant-5: light-dark(#a33058, #f199b6);
+  --variant-6: light-dark(#686216, #d4ce72);
+}
+main {
+  width: min(100%, 1440px);
+}
+section,
+#scatter-section {
+  margin-block: 1.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.look-for {
+  border-left: 3px solid var(--variant-1);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.experiment-prose {
+  max-width: 92ch;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.experiment-prose li + li {
+  margin-top: .6rem;
+}
+.controls,
+.run-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1rem;
+  margin-block: .65rem;
+}
+.controls label,
+.run-row label {
+  display: inline-flex;
+  gap: .4rem;
+  align-items: center;
+}
+input[type="number"] {
+  width: 8rem;
+}
+input,
+select,
+button {
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .35rem;
+  font: inherit;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--variant-1);
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: .6;
+}
+:focus-visible {
+  outline: 3px solid var(--selected);
+  outline-offset: 3px;
+}
+summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+svg {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+svg text {
+  fill: var(--muted-foreground);
+  font-size: 11px;
+}
+svg .plot-label {
+  fill: var(--foreground);
+}
+.chart-grid {
+  stroke: var(--border);
+  stroke-width: .5;
+}
+.chart-readout {
+  min-height: 2.3em;
+  font-size: .8rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.crosshair {
+  stroke: var(--foreground);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  pointer-events: none;
+}
+#bands {
+  touch-action: none;
+  cursor: crosshair;
+}
+.brush-selection {
+  fill: var(--selection-fill);
+  stroke: var(--selected);
+}
+.run-swatch {
+  width: 2.2rem;
+  height: .7rem;
+}
+.run-row {
+  padding-block: .25rem;
+  border-bottom: 1px solid var(--border);
+}
+.run-row code {
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: auto;
+  max-height: 36rem;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .8rem;
+  font-variant-numeric: tabular-nums;
+}
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: .5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+th {
+  position: sticky;
+  top: 0;
+  background: var(--background);
+}
+.canvas-scroll {
+  position: relative;
+  max-height: 32rem;
+  overflow: auto;
+}
+#scatter-section {
+  position: relative;
+}
+.canvas-crosshair {
+  position: absolute;
+  width: 0;
+  border-left: 1px dashed var(--foreground);
+  pointer-events: none;
+}
+canvas {
+  display: block;
+  width: 100%;
+}
+#tooltip {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  padding: .6rem .75rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: 0 3px 14px #0002;
+  max-width: min(28rem, calc(100vw - 24px));
+  font-size: .8rem;
+  white-space: pre-line;
+}
+#topology .partition-link {
+  transition: x1 80ms, x2 80ms;
+}
+#topology rect {
+  stroke: var(--border);
+}
+.broker-heading {
+  margin: 1rem 0 .3rem;
+  font-size: .95rem;
+  font-weight: 500;
+}
+.time-controls {
+  background: var(--background);
+}
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+}
+.comparison-grid article {
+  min-width: 0;
+}
+.comparison-status {
+  border-left: 3px solid var(--variant-3);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.comparison-gap {
+  border-color: var(--variant-4);
+  font-weight: 600;
+}
+#comparison-pair {
+  max-width: 100%;
+}
+.stepper label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+#step-range {
+  flex: 1;
+  min-width: 8rem;
+}
+@media (max-width: 600px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .run-row {
+    gap: .45rem;
+  }
+  .controls {
+    align-items: start;
+  }
+  .caption {
+    line-height: 1.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #topology .partition-link {
+    transition: none;
+  }
+}

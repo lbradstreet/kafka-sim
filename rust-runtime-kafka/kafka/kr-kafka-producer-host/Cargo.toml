@@ -1,0 +1,21 @@
+[package]
+name = "kr-kafka-producer-host"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Dedicated native owner thread for the bounded Kafka producer"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[dependencies]
+kr-kafka-client = { path = "../kr-kafka-client" }
+kr-kafka-host = { path = "../kr-kafka-host" }
+kr-kafka-producer = { path = "../kr-kafka-producer" }
+kr-kafka-record = { path = "../kr-kafka-record" }
+kr-runtime = { path = "../.." }
+
+[dev-dependencies]
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+
+[lints]
+workspace = true

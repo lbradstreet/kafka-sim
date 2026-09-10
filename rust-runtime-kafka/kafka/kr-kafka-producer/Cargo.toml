@@ -1,0 +1,29 @@
+[package]
+name = "kr-kafka-producer"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Bounded Kafka producer engine and portable owner actor"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+# Only the explicit native binding test artifact enables owner input injection.
+binding-test-hooks = []
+
+[dependencies]
+kr-kafka-client = { path = "../kr-kafka-client" }
+hdrhistogram = { version = "=7.6.0", default-features = false }
+kr-runtime = { path = "../.." }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-kafka-protocol = { path = "../kr-kafka-protocol" }
+kr-shared-bytes = { path = "../../bytes/kr-shared-bytes" }
+kr-kafka-record = { path = "../kr-kafka-record" }
+
+[dev-dependencies]
+allocation-counter = "=0.8.1"
+kr-runtime = { path = "../..", features = ["test-support"] }
+kr-kafka-broker-model = { path = "../kr-kafka-broker-model" }
+
+[lints]
+workspace = true

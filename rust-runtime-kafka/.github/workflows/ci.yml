@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Linux covers the full workspace, including the io_uring adapter crates,
+  # which are cfg-empty everywhere else. The runner must be a VM (not a
+  # container) so io_uring syscalls are available; GitHub-hosted runners are.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # rustup resolves the pinned toolchain from rust-toolchain.toml.
+      - run: rustup show active-toolchain
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo run -p kr-kafka-codegen --locked -- --check
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - run: cargo test --workspace --all-targets --all-features --locked
+      - run: cargo test --workspace --all-features --locked --doc
+
+  kafka-dst:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show active-toolchain
+      - uses: Swatinem/rust-cache@v2
+      - name: Full producer DST campaign
+        run: cargo run --release -p kr-kafka-sim --bin kafka-sim --locked -- --campaign --watchdog-ms 900000 --failure-dir kafka-sim-failure
+      - name: Retain replay and trace artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafka-dst-failure
+          path: kafka-sim-failure
+          if-no-files-found: warn
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck scripts/*.sh

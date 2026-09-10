@@ -1,0 +1,40 @@
+[package]
+name = "kr-runtime-ring-uring"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Linux io_uring host for the durable kr-runtime-ring engine"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[dependencies]
+kr-runtime-ring = { path = "../kr-runtime-ring" }
+kr-runtime = { path = "../.." }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-runtime-io-uring = { path = "../../io/kr-runtime-io-uring" }
+
+[dev-dependencies]
+criterion = "0.7"
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-runtime-ring = { path = "../kr-runtime-ring", features = ["test-support"] }
+
+# The integration tests are `#![cfg(target_os = "linux")]`; only they need
+# quarry. criterion, kr-runtime-io, and kr-runtime-ring stay portable because the ring
+# bench's simulated baseline compiles and runs everywhere. libc supplies the
+# O_DSYNC flag for the write-through bench backends.
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+quarry = { path = "../../dogfood/quarry" }
+libc = "0.2"
+
+[[bench]]
+name = "ring"
+harness = false
+
+[[bench]]
+name = "ring_churn"
+harness = false
+
+[lints]
+workspace = true

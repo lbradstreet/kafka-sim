@@ -1,0 +1,106 @@
+:root {
+  --protected-fill: color-mix(in oklch, var(--accepted) 38%, transparent);
+}
+
+.cursor-path {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.cursor-path.accepted {
+  stroke: var(--accepted);
+}
+
+.cursor-path.durable {
+  stroke: var(--durable);
+}
+
+.cursor-path.tail {
+  stroke-dasharray: 6 4;
+}
+
+.cursor-point {
+  stroke: var(--background);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.physical-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0.4rem 0 0.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.physical-values span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.physical-values i {
+  display: inline-block;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.physical-values .head {
+  color: var(--durable);
+}
+
+.physical-values .durable-tail {
+  color: var(--recovered);
+}
+
+.physical-values .accepted-tail {
+  color: var(--accepted);
+}
+
+.strip-base {
+  fill: var(--muted);
+}
+
+.strip-protected {
+  fill: var(--protected-fill);
+}
+
+.strip-marker {
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.strip-marker.head {
+  fill: var(--durable);
+  stroke: var(--durable);
+}
+
+.strip-marker.durable-tail {
+  fill: var(--recovered);
+  stroke: var(--recovered);
+}
+
+.strip-marker.accepted-tail {
+  fill: var(--accepted);
+  stroke: var(--accepted);
+}
+
+.full-circle-note,
+.recovery-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.82rem;
+}
+
+.full-circle-note {
+  color: var(--foreground);
+}
+
+.recovery-note {
+  color: var(--destructive);
+}

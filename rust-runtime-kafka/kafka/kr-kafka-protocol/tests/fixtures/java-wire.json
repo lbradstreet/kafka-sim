@@ -1,0 +1,1290 @@
+{
+  "format_version": 1,
+  "oracle": {
+    "artifact": "org.apache.kafka:kafka-clients:4.3.0",
+    "source_commit": "a9ce3221537b8653448750697915607dc7936cf3"
+  },
+  "cases": [
+    {
+      "name": "ApiVersionsRequest-v0-default",
+      "message": "ApiVersionsRequest",
+      "version": 0,
+      "fields": {},
+      "hex": ""
+    },
+    {
+      "name": "ApiVersionsRequest-v0-ignorable-fields",
+      "message": "ApiVersionsRequest",
+      "version": 0,
+      "fields": {
+        "ClientSoftwareName": "kr-kafka",
+        "ClientSoftwareVersion": "0.1.0"
+      },
+      "hex": ""
+    },
+    {
+      "name": "ApiVersionsRequest-v3-default",
+      "message": "ApiVersionsRequest",
+      "version": 3,
+      "fields": {},
+      "hex": "010100"
+    },
+    {
+      "name": "ApiVersionsRequest-v3-populated",
+      "message": "ApiVersionsRequest",
+      "version": 3,
+      "fields": {
+        "ClientSoftwareName": "kr-kafka-π",
+        "ClientSoftwareVersion": "0.1.0",
+        "_unknownTaggedFields": [
+          {
+            "tag": 8,
+            "dataHex": "deadbeef"
+          }
+        ]
+      },
+      "hex": "0c6b722d6b61666b612dcf8006302e312e30010804deadbeef"
+    },
+    {
+      "name": "ApiVersionsResponse-v0-default",
+      "message": "ApiVersionsResponse",
+      "version": 0,
+      "fields": {},
+      "hex": "000000000000"
+    },
+    {
+      "name": "ApiVersionsResponse-v0-unsupported-version",
+      "message": "ApiVersionsResponse",
+      "version": 0,
+      "fields": {
+        "ErrorCode": 35,
+        "ApiKeys": [
+          {
+            "ApiKey": 18,
+            "MinVersion": 0,
+            "MaxVersion": 3
+          }
+        ]
+      },
+      "hex": "002300000001001200000003"
+    },
+    {
+      "name": "ApiVersionsResponse-v3-default",
+      "message": "ApiVersionsResponse",
+      "version": 3,
+      "fields": {
+        "SupportedFeatures": [],
+        "FinalizedFeaturesEpoch": -1,
+        "FinalizedFeatures": [],
+        "ZkMigrationReady": false
+      },
+      "hex": "0000010000000000"
+    },
+    {
+      "name": "ApiVersionsResponse-v3-populated",
+      "message": "ApiVersionsResponse",
+      "version": 3,
+      "fields": {
+        "ErrorCode": 0,
+        "ApiKeys": [
+          {
+            "ApiKey": 0,
+            "MinVersion": 3,
+            "MaxVersion": 13
+          },
+          {
+            "ApiKey": 18,
+            "MinVersion": 0,
+            "MaxVersion": 4
+          }
+        ],
+        "ThrottleTimeMs": 15,
+        "SupportedFeatures": [
+          {
+            "Name": "transaction.version",
+            "MinVersion": 1,
+            "MaxVersion": 2
+          }
+        ],
+        "FinalizedFeaturesEpoch": 9007199254740993,
+        "FinalizedFeatures": [
+          {
+            "Name": "transaction.version",
+            "MaxVersionLevel": 2,
+            "MinVersionLevel": 1
+          }
+        ],
+        "ZkMigrationReady": true,
+        "_unknownTaggedFields": [
+          {
+            "tag": 4,
+            "dataHex": "00ff"
+          },
+          {
+            "tag": 300,
+            "dataHex": ""
+          }
+        ]
+      },
+      "hex": "00000300000003000d00001200000004000000000f06001a02147472616e73616374696f6e2e76657273696f6e000100020001080020000000000001021a02147472616e73616374696f6e2e76657273696f6e0002000100030101040200ffac0200"
+    },
+    {
+      "name": "InitProducerIdRequest-v4-default",
+      "message": "InitProducerIdRequest",
+      "version": 4,
+      "fields": {},
+      "hex": "0100000000ffffffffffffffffffff00"
+    },
+    {
+      "name": "InitProducerIdRequest-v4-null-transactional-id",
+      "message": "InitProducerIdRequest",
+      "version": 4,
+      "fields": {
+        "TransactionalId": null,
+        "TransactionTimeoutMs": 0
+      },
+      "hex": "0000000000ffffffffffffffffffff00"
+    },
+    {
+      "name": "InitProducerIdRequest-v4-populated",
+      "message": "InitProducerIdRequest",
+      "version": 4,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "TransactionTimeoutMs": 45000,
+        "ProducerId": 9007199254740993,
+        "ProducerEpoch": 32767
+      },
+      "hex": "0774786e2dcebb0000afc800200000000000017fff00"
+    },
+    {
+      "name": "InitProducerIdResponse-v4-default",
+      "message": "InitProducerIdResponse",
+      "version": 4,
+      "fields": {},
+      "hex": "000000000000ffffffffffffffff000000"
+    },
+    {
+      "name": "InitProducerIdResponse-v4-populated",
+      "message": "InitProducerIdResponse",
+      "version": 4,
+      "fields": {
+        "ThrottleTimeMs": 9,
+        "ErrorCode": 90,
+        "ProducerId": 9007199254740993,
+        "ProducerEpoch": 32767
+      },
+      "hex": "00000009005a00200000000000017fff00"
+    },
+    {
+      "name": "MetadataRequest-v12-default",
+      "message": "MetadataRequest",
+      "version": 12,
+      "fields": {},
+      "hex": "01010000"
+    },
+    {
+      "name": "MetadataRequest-v12-null-topics",
+      "message": "MetadataRequest",
+      "version": 12,
+      "fields": {
+        "Topics": null
+      },
+      "hex": "00010000"
+    },
+    {
+      "name": "MetadataRequest-v12-populated",
+      "message": "MetadataRequest",
+      "version": 12,
+      "fields": {
+        "Topics": [
+          {
+            "TopicId": "01234567-89ab-cdef-fedc-ba9876543210",
+            "Name": null
+          },
+          {
+            "Name": "orders-π"
+          }
+        ],
+        "AllowAutoTopicCreation": false,
+        "IncludeTopicAuthorizedOperations": true
+      },
+      "hex": "030123456789abcdeffedcba98765432100000000000000000000000000000000000000a6f72646572732dcf8000000100"
+    },
+    {
+      "name": "MetadataResponse-v12-default",
+      "message": "MetadataResponse",
+      "version": 12,
+      "fields": {},
+      "hex": "000000000100ffffffff0100"
+    },
+    {
+      "name": "MetadataResponse-v12-populated",
+      "message": "MetadataResponse",
+      "version": 12,
+      "fields": {
+        "ThrottleTimeMs": 12,
+        "Brokers": [
+          {
+            "NodeId": 101,
+            "Host": "broker-a",
+            "Port": 9092,
+            "Rack": "rack-λ"
+          },
+          {
+            "NodeId": 102,
+            "Host": "broker-b",
+            "Port": 9093,
+            "Rack": null
+          }
+        ],
+        "ClusterId": "cluster-π",
+        "ControllerId": 101,
+        "Topics": [
+          {
+            "ErrorCode": 0,
+            "Name": "orders-π",
+            "TopicId": "01234567-89ab-cdef-fedc-ba9876543210",
+            "IsInternal": false,
+            "Partitions": [
+              {
+                "ErrorCode": 0,
+                "PartitionIndex": 7,
+                "LeaderId": 101,
+                "LeaderEpoch": 23,
+                "ReplicaNodes": [
+                  101,
+                  102,
+                  103
+                ],
+                "IsrNodes": [
+                  101,
+                  102
+                ],
+                "OfflineReplicas": [
+                  103
+                ]
+              }
+            ],
+            "TopicAuthorizedOperations": 4096
+          },
+          {
+            "ErrorCode": 100,
+            "Name": null,
+            "TopicId": "ffffffff-ffff-ffff-8000-000000000001",
+            "Partitions": []
+          }
+        ]
+      },
+      "hex": "0000000c03000000650962726f6b65722d6100002384087261636b2dcebb00000000660962726f6b65722d620000238500000b636c75737465722dcf80000000650300000a6f72646572732dcf800123456789abcdeffedcba987654321000020000000000070000006500000017040000006500000066000000670300000065000000660200000067000000100000006400ffffffffffffffff80000000000000010001800000000000"
+    },
+    {
+      "name": "ProduceRequest-v9-default",
+      "message": "ProduceRequest",
+      "version": 9,
+      "fields": {},
+      "hex": "000000000000000100"
+    },
+    {
+      "name": "ProduceRequest-v9-populated",
+      "message": "ProduceRequest",
+      "version": 9,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "Acks": -1,
+        "TimeoutMs": 30000,
+        "TopicData": [
+          {
+            "Name": "orders-π",
+            "PartitionData": [
+              {
+                "Index": 7,
+                "Records": {
+                  "hex": "00010200ff"
+                }
+              },
+              {
+                "Index": 8,
+                "Records": null
+              },
+              {
+                "Index": 9,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0774786e2dcebbffff00007530020a6f72646572732dcf8004000000070600010200ff000000000800000000000901000000"
+    },
+    {
+      "name": "ProduceRequest-v10-default",
+      "message": "ProduceRequest",
+      "version": 10,
+      "fields": {},
+      "hex": "000000000000000100"
+    },
+    {
+      "name": "ProduceRequest-v10-populated",
+      "message": "ProduceRequest",
+      "version": 10,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "Acks": -1,
+        "TimeoutMs": 30000,
+        "TopicData": [
+          {
+            "Name": "orders-π",
+            "PartitionData": [
+              {
+                "Index": 7,
+                "Records": {
+                  "hex": "00010200ff"
+                }
+              },
+              {
+                "Index": 8,
+                "Records": null
+              },
+              {
+                "Index": 9,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0774786e2dcebbffff00007530020a6f72646572732dcf8004000000070600010200ff000000000800000000000901000000"
+    },
+    {
+      "name": "ProduceRequest-v11-default",
+      "message": "ProduceRequest",
+      "version": 11,
+      "fields": {},
+      "hex": "000000000000000100"
+    },
+    {
+      "name": "ProduceRequest-v11-populated",
+      "message": "ProduceRequest",
+      "version": 11,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "Acks": -1,
+        "TimeoutMs": 30000,
+        "TopicData": [
+          {
+            "Name": "orders-π",
+            "PartitionData": [
+              {
+                "Index": 7,
+                "Records": {
+                  "hex": "00010200ff"
+                }
+              },
+              {
+                "Index": 8,
+                "Records": null
+              },
+              {
+                "Index": 9,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0774786e2dcebbffff00007530020a6f72646572732dcf8004000000070600010200ff000000000800000000000901000000"
+    },
+    {
+      "name": "ProduceRequest-v12-default",
+      "message": "ProduceRequest",
+      "version": 12,
+      "fields": {},
+      "hex": "000000000000000100"
+    },
+    {
+      "name": "ProduceRequest-v12-populated",
+      "message": "ProduceRequest",
+      "version": 12,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "Acks": -1,
+        "TimeoutMs": 30000,
+        "TopicData": [
+          {
+            "Name": "orders-π",
+            "PartitionData": [
+              {
+                "Index": 7,
+                "Records": {
+                  "hex": "00010200ff"
+                }
+              },
+              {
+                "Index": 8,
+                "Records": null
+              },
+              {
+                "Index": 9,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0774786e2dcebbffff00007530020a6f72646572732dcf8004000000070600010200ff000000000800000000000901000000"
+    },
+    {
+      "name": "ProduceRequest-v13-default",
+      "message": "ProduceRequest",
+      "version": 13,
+      "fields": {},
+      "hex": "000000000000000100"
+    },
+    {
+      "name": "ProduceRequest-v13-populated",
+      "message": "ProduceRequest",
+      "version": 13,
+      "fields": {
+        "TransactionalId": "txn-λ",
+        "Acks": -1,
+        "TimeoutMs": 30000,
+        "TopicData": [
+          {
+            "TopicId": "01234567-89ab-cdef-fedc-ba9876543210",
+            "PartitionData": [
+              {
+                "Index": 7,
+                "Records": {
+                  "hex": "00010200ff"
+                }
+              },
+              {
+                "Index": 8,
+                "Records": null
+              },
+              {
+                "Index": 9,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0774786e2dcebbffff00007530020123456789abcdeffedcba987654321004000000070600010200ff000000000800000000000901000000"
+    },
+    {
+      "name": "ProduceResponse-v9-default",
+      "message": "ProduceResponse",
+      "version": 9,
+      "fields": {},
+      "hex": "010000000000"
+    },
+    {
+      "name": "ProduceResponse-v9-populated",
+      "message": "ProduceResponse",
+      "version": 9,
+      "fields": {
+        "Responses": [
+          {
+            "Name": "orders-π",
+            "PartitionResponses": [
+              {
+                "Index": 7,
+                "ErrorCode": 6,
+                "BaseOffset": 9007199254740993,
+                "LogAppendTimeMs": 1720000000123,
+                "LogStartOffset": 42,
+                "RecordErrors": [
+                  {
+                    "BatchIndex": 2,
+                    "BatchIndexErrorMessage": "invalid-λ"
+                  },
+                  {
+                    "BatchIndex": 3,
+                    "BatchIndexErrorMessage": null
+                  }
+                ],
+                "ErrorMessage": "retry"
+              }
+            ]
+          }
+        ],
+        "ThrottleTimeMs": 123
+      },
+      "hex": "020a6f72646572732dcf800200000007000600200000000000010000019077fd307b000000000000002a03000000020b696e76616c69642dcebb0000000003000006726574727900000000007b00"
+    },
+    {
+      "name": "ProduceResponse-v10-default",
+      "message": "ProduceResponse",
+      "version": 10,
+      "fields": {
+        "NodeEndpoints": []
+      },
+      "hex": "010000000000"
+    },
+    {
+      "name": "ProduceResponse-v10-default-nested-tags",
+      "message": "ProduceResponse",
+      "version": 10,
+      "fields": {
+        "Responses": [
+          {
+            "Name": "defaults",
+            "PartitionResponses": [
+              {
+                "Index": 1,
+                "CurrentLeader": {
+                  "LeaderId": -1,
+                  "LeaderEpoch": -1
+                }
+              }
+            ]
+          }
+        ],
+        "NodeEndpoints": []
+      },
+      "hex": "020964656661756c7473020000000100000000000000000000ffffffffffffffffffffffffffffffff010000000000000000"
+    },
+    {
+      "name": "ProduceResponse-v10-populated",
+      "message": "ProduceResponse",
+      "version": 10,
+      "fields": {
+        "Responses": [
+          {
+            "Name": "orders-π",
+            "PartitionResponses": [
+              {
+                "Index": 7,
+                "ErrorCode": 6,
+                "BaseOffset": 9007199254740993,
+                "LogAppendTimeMs": 1720000000123,
+                "LogStartOffset": 42,
+                "RecordErrors": [
+                  {
+                    "BatchIndex": 2,
+                    "BatchIndexErrorMessage": "invalid-λ"
+                  },
+                  {
+                    "BatchIndex": 3,
+                    "BatchIndexErrorMessage": null
+                  }
+                ],
+                "ErrorMessage": "retry",
+                "CurrentLeader": {
+                  "LeaderId": 101,
+                  "LeaderEpoch": 42
+                }
+              }
+            ]
+          }
+        ],
+        "ThrottleTimeMs": 123,
+        "NodeEndpoints": [
+          {
+            "NodeId": 101,
+            "Host": "broker-a",
+            "Port": 9092,
+            "Rack": null
+          },
+          {
+            "NodeId": 102,
+            "Host": "broker-b",
+            "Port": 9093,
+            "Rack": "rack-π"
+          }
+        ]
+      },
+      "hex": "020a6f72646572732dcf800200000007000600200000000000010000019077fd307b000000000000002a03000000020b696e76616c69642dcebb00000000030000067265747279010009000000650000002a00000000007b01002e03000000650962726f6b65722d61000023840000000000660962726f6b65722d6200002385087261636b2dcf8000"
+    },
+    {
+      "name": "ProduceResponse-v11-default",
+      "message": "ProduceResponse",
+      "version": 11,
+      "fields": {
+        "NodeEndpoints": []
+      },
+      "hex": "010000000000"
+    },
+    {
+      "name": "ProduceResponse-v11-populated",
+      "message": "ProduceResponse",
+      "version": 11,
+      "fields": {
+        "Responses": [
+          {
+            "Name": "orders-π",
+            "PartitionResponses": [
+              {
+                "Index": 7,
+                "ErrorCode": 6,
+                "BaseOffset": 9007199254740993,
+                "LogAppendTimeMs": 1720000000123,
+                "LogStartOffset": 42,
+                "RecordErrors": [
+                  {
+                    "BatchIndex": 2,
+                    "BatchIndexErrorMessage": "invalid-λ"
+                  },
+                  {
+                    "BatchIndex": 3,
+                    "BatchIndexErrorMessage": null
+                  }
+                ],
+                "ErrorMessage": "retry",
+                "CurrentLeader": {
+                  "LeaderId": 101,
+                  "LeaderEpoch": 42
+                }
+              }
+            ]
+          }
+        ],
+        "ThrottleTimeMs": 123,
+        "NodeEndpoints": [
+          {
+            "NodeId": 101,
+            "Host": "broker-a",
+            "Port": 9092,
+            "Rack": null
+          },
+          {
+            "NodeId": 102,
+            "Host": "broker-b",
+            "Port": 9093,
+            "Rack": "rack-π"
+          }
+        ]
+      },
+      "hex": "020a6f72646572732dcf800200000007000600200000000000010000019077fd307b000000000000002a03000000020b696e76616c69642dcebb00000000030000067265747279010009000000650000002a00000000007b01002e03000000650962726f6b65722d61000023840000000000660962726f6b65722d6200002385087261636b2dcf8000"
+    },
+    {
+      "name": "ProduceResponse-v12-default",
+      "message": "ProduceResponse",
+      "version": 12,
+      "fields": {
+        "NodeEndpoints": []
+      },
+      "hex": "010000000000"
+    },
+    {
+      "name": "ProduceResponse-v12-populated",
+      "message": "ProduceResponse",
+      "version": 12,
+      "fields": {
+        "Responses": [
+          {
+            "Name": "orders-π",
+            "PartitionResponses": [
+              {
+                "Index": 7,
+                "ErrorCode": 6,
+                "BaseOffset": 9007199254740993,
+                "LogAppendTimeMs": 1720000000123,
+                "LogStartOffset": 42,
+                "RecordErrors": [
+                  {
+                    "BatchIndex": 2,
+                    "BatchIndexErrorMessage": "invalid-λ"
+                  },
+                  {
+                    "BatchIndex": 3,
+                    "BatchIndexErrorMessage": null
+                  }
+                ],
+                "ErrorMessage": "retry",
+                "CurrentLeader": {
+                  "LeaderId": 101,
+                  "LeaderEpoch": 42
+                }
+              }
+            ]
+          }
+        ],
+        "ThrottleTimeMs": 123,
+        "NodeEndpoints": [
+          {
+            "NodeId": 101,
+            "Host": "broker-a",
+            "Port": 9092,
+            "Rack": null
+          },
+          {
+            "NodeId": 102,
+            "Host": "broker-b",
+            "Port": 9093,
+            "Rack": "rack-π"
+          }
+        ]
+      },
+      "hex": "020a6f72646572732dcf800200000007000600200000000000010000019077fd307b000000000000002a03000000020b696e76616c69642dcebb00000000030000067265747279010009000000650000002a00000000007b01002e03000000650962726f6b65722d61000023840000000000660962726f6b65722d6200002385087261636b2dcf8000"
+    },
+    {
+      "name": "ProduceResponse-v13-default",
+      "message": "ProduceResponse",
+      "version": 13,
+      "fields": {
+        "NodeEndpoints": []
+      },
+      "hex": "010000000000"
+    },
+    {
+      "name": "ProduceResponse-v13-default-nested-tags",
+      "message": "ProduceResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "PartitionResponses": [
+              {
+                "Index": 1,
+                "CurrentLeader": {
+                  "LeaderId": -1,
+                  "LeaderEpoch": -1
+                }
+              }
+            ],
+            "TopicId": "00000000-0000-0000-0000-000000000000"
+          }
+        ],
+        "NodeEndpoints": []
+      },
+      "hex": "0200000000000000000000000000000000020000000100000000000000000000ffffffffffffffffffffffffffffffff010000000000000000"
+    },
+    {
+      "name": "ProduceResponse-v13-populated",
+      "message": "ProduceResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "TopicId": "01234567-89ab-cdef-fedc-ba9876543210",
+            "PartitionResponses": [
+              {
+                "Index": 7,
+                "ErrorCode": 6,
+                "BaseOffset": 9007199254740993,
+                "LogAppendTimeMs": 1720000000123,
+                "LogStartOffset": 42,
+                "RecordErrors": [
+                  {
+                    "BatchIndex": 2,
+                    "BatchIndexErrorMessage": "invalid-λ"
+                  },
+                  {
+                    "BatchIndex": 3,
+                    "BatchIndexErrorMessage": null
+                  }
+                ],
+                "ErrorMessage": "retry",
+                "CurrentLeader": {
+                  "LeaderId": 101,
+                  "LeaderEpoch": 42
+                }
+              }
+            ]
+          }
+        ],
+        "ThrottleTimeMs": 123,
+        "NodeEndpoints": [
+          {
+            "NodeId": 101,
+            "Host": "broker-a",
+            "Port": 9092,
+            "Rack": null
+          },
+          {
+            "NodeId": 102,
+            "Host": "broker-b",
+            "Port": 9093,
+            "Rack": "rack-π"
+          }
+        ]
+      },
+      "hex": "020123456789abcdeffedcba98765432100200000007000600200000000000010000019077fd307b000000000000002a03000000020b696e76616c69642dcebb00000000030000067265747279010009000000650000002a00000000007b01002e03000000650962726f6b65722d61000023840000000000660962726f6b65722d6200002385087261636b2dcf8000"
+    },
+    {
+      "name": "ProduceResponse-v13-unknown-tags",
+      "message": "ProduceResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "TopicId": "01234567-89ab-cdef-fedc-ba9876543210",
+            "PartitionResponses": [
+              {
+                "Index": 2,
+                "CurrentLeader": {
+                  "LeaderId": 3,
+                  "_unknownTaggedFields": [
+                    {
+                      "tag": 9,
+                      "dataHex": "aabb"
+                    }
+                  ],
+                  "LeaderEpoch": -1
+                },
+                "_unknownTaggedFields": [
+                  {
+                    "tag": 1,
+                    "dataHex": "ccddee"
+                  }
+                ]
+              }
+            ],
+            "_unknownTaggedFields": [
+              {
+                "tag": 5,
+                "dataHex": "01"
+              }
+            ]
+          }
+        ],
+        "NodeEndpoints": [
+          {
+            "NodeId": 3,
+            "Host": "b",
+            "Port": 9092,
+            "_unknownTaggedFields": [
+              {
+                "tag": 2,
+                "dataHex": "00"
+              }
+            ]
+          }
+        ],
+        "_unknownTaggedFields": [
+          {
+            "tag": 1,
+            "dataHex": "ff"
+          },
+          {
+            "tag": 300,
+            "dataHex": ""
+          }
+        ]
+      },
+      "hex": "020123456789abcdeffedcba9876543210020000000200000000000000000000ffffffffffffffffffffffffffffffff010002000d00000003ffffffff010902aabb0103ccddee0105010100000000030010020000000302620000238400010201000101ffac0200"
+    },
+    {
+      "name": "RequestHeader-v1-default",
+      "message": "RequestHeader",
+      "version": 1,
+      "fields": {},
+      "hex": "00000000000000000000"
+    },
+    {
+      "name": "RequestHeader-v1-null-client-id",
+      "message": "RequestHeader",
+      "version": 1,
+      "fields": {
+        "RequestApiKey": 0,
+        "RequestApiVersion": 9,
+        "CorrelationId": -2147483648,
+        "ClientId": null
+      },
+      "hex": "0000000980000000ffff"
+    },
+    {
+      "name": "RequestHeader-v1-populated",
+      "message": "RequestHeader",
+      "version": 1,
+      "fields": {
+        "RequestApiKey": 18,
+        "RequestApiVersion": 3,
+        "CorrelationId": 2147483647,
+        "ClientId": "kr-π"
+      },
+      "hex": "001200037fffffff00056b722dcf80"
+    },
+    {
+      "name": "RequestHeader-v2-default",
+      "message": "RequestHeader",
+      "version": 2,
+      "fields": {},
+      "hex": "0000000000000000000000"
+    },
+    {
+      "name": "RequestHeader-v2-null-client-id",
+      "message": "RequestHeader",
+      "version": 2,
+      "fields": {
+        "RequestApiKey": 0,
+        "RequestApiVersion": 9,
+        "CorrelationId": -2147483648,
+        "ClientId": null
+      },
+      "hex": "0000000980000000ffff00"
+    },
+    {
+      "name": "RequestHeader-v2-populated",
+      "message": "RequestHeader",
+      "version": 2,
+      "fields": {
+        "RequestApiKey": 18,
+        "RequestApiVersion": 3,
+        "CorrelationId": 2147483647,
+        "ClientId": "kr-π",
+        "_unknownTaggedFields": [
+          {
+            "tag": 10,
+            "dataHex": "aabb"
+          }
+        ]
+      },
+      "hex": "001200037fffffff00056b722dcf80010a02aabb"
+    },
+    {
+      "name": "ResponseHeader-v0-default",
+      "message": "ResponseHeader",
+      "version": 0,
+      "fields": {},
+      "hex": "00000000"
+    },
+    {
+      "name": "ResponseHeader-v0-populated",
+      "message": "ResponseHeader",
+      "version": 0,
+      "fields": {
+        "CorrelationId": -2147483648
+      },
+      "hex": "80000000"
+    },
+    {
+      "name": "ResponseHeader-v1-default",
+      "message": "ResponseHeader",
+      "version": 1,
+      "fields": {},
+      "hex": "0000000000"
+    },
+    {
+      "name": "ResponseHeader-v1-populated",
+      "message": "ResponseHeader",
+      "version": 1,
+      "fields": {
+        "CorrelationId": -2147483648,
+        "_unknownTaggedFields": [
+          {
+            "tag": 1,
+            "dataHex": "00ff"
+          },
+          {
+            "tag": 128,
+            "dataHex": ""
+          }
+        ]
+      },
+      "hex": "8000000002010200ff800100"
+    },
+    {
+      "name": "SaslAuthenticateRequest-v2-default",
+      "message": "SaslAuthenticateRequest",
+      "version": 2,
+      "fields": {},
+      "hex": "0100"
+    },
+    {
+      "name": "SaslAuthenticateRequest-v2-populated",
+      "message": "SaslAuthenticateRequest",
+      "version": 2,
+      "fields": {
+        "AuthBytes": {
+          "hex": "0075736572007000ff"
+        }
+      },
+      "hex": "0a0075736572007000ff00"
+    },
+    {
+      "name": "SaslAuthenticateResponse-v2-default",
+      "message": "SaslAuthenticateResponse",
+      "version": 2,
+      "fields": {},
+      "hex": "00000101000000000000000000"
+    },
+    {
+      "name": "SaslAuthenticateResponse-v2-null-error-message",
+      "message": "SaslAuthenticateResponse",
+      "version": 2,
+      "fields": {
+        "ErrorMessage": null
+      },
+      "hex": "00000001000000000000000000"
+    },
+    {
+      "name": "SaslAuthenticateResponse-v2-populated",
+      "message": "SaslAuthenticateResponse",
+      "version": 2,
+      "fields": {
+        "ErrorCode": 58,
+        "ErrorMessage": "authentication-λ",
+        "AuthBytes": {
+          "hex": "010002ff"
+        },
+        "SessionLifetimeMs": 9007199254740993
+      },
+      "hex": "003a1261757468656e7469636174696f6e2dcebb05010002ff002000000000000100"
+    },
+    {
+      "name": "SaslHandshakeRequest-v1-default",
+      "message": "SaslHandshakeRequest",
+      "version": 1,
+      "fields": {},
+      "hex": "0000"
+    },
+    {
+      "name": "SaslHandshakeRequest-v1-populated",
+      "message": "SaslHandshakeRequest",
+      "version": 1,
+      "fields": {
+        "Mechanism": "SCRAM-SHA-256"
+      },
+      "hex": "000d534352414d2d5348412d323536"
+    },
+    {
+      "name": "SaslHandshakeResponse-v1-default",
+      "message": "SaslHandshakeResponse",
+      "version": 1,
+      "fields": {},
+      "hex": "000000000000"
+    },
+    {
+      "name": "SaslHandshakeResponse-v1-populated",
+      "message": "SaslHandshakeResponse",
+      "version": 1,
+      "fields": {
+        "ErrorCode": 33,
+        "Mechanisms": [
+          "PLAIN",
+          "SCRAM-SHA-256"
+        ]
+      },
+      "hex": "0021000000020005504c41494e000d534352414d2d5348412d323536"
+    },
+    {
+      "name": "FetchRequest-v13-default",
+      "message": "FetchRequest",
+      "version": 13,
+      "fields": {},
+      "hex": "ffffffff00000000000000007fffffff0000000000ffffffff01010100"
+    },
+    {
+      "name": "FetchRequest-v13-stateless",
+      "message": "FetchRequest",
+      "version": 13,
+      "fields": {
+        "ReplicaId": -1,
+        "MaxWaitMs": 0,
+        "MinBytes": 0,
+        "MaxBytes": 1048576,
+        "IsolationLevel": 0,
+        "SessionId": 0,
+        "SessionEpoch": -1,
+        "Topics": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "Partition": 2,
+                "CurrentLeaderEpoch": 7,
+                "FetchOffset": 9007199254740993,
+                "LastFetchedEpoch": -1,
+                "LogStartOffset": -1,
+                "PartitionMaxBytes": 131072
+              }
+            ]
+          }
+        ],
+        "ForgottenTopicsData": [],
+        "RackId": ""
+      },
+      "hex": "ffffffff0000000000000000001000000000000000ffffffff0200112233445566778899aabbccddeeff0200000002000000070020000000000001ffffffffffffffffffffffff000200000000010100"
+    },
+    {
+      "name": "FetchRequest-v13-tagged",
+      "message": "FetchRequest",
+      "version": 13,
+      "fields": {
+        "ClusterId": "cluster-π",
+        "Topics": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "Partition": 0,
+                "FetchOffset": 42,
+                "PartitionMaxBytes": 1024,
+                "_unknownTaggedFields": [
+                  {
+                    "tag": 5,
+                    "dataHex": "ff00"
+                  }
+                ]
+              }
+            ],
+            "_unknownTaggedFields": [
+              {
+                "tag": 7,
+                "dataHex": "fe"
+              }
+            ]
+          }
+        ],
+        "_unknownTaggedFields": [
+          {
+            "tag": 9,
+            "dataHex": "0102"
+          }
+        ]
+      },
+      "hex": "ffffffff00000000000000007fffffff0000000000ffffffff0200112233445566778899aabbccddeeff0200000000ffffffff000000000000002affffffffffffffffffffffff00000400010502ff00010701fe010102000b0b636c75737465722dcf8009020102"
+    },
+    {
+      "name": "FetchResponse-v13-default",
+      "message": "FetchResponse",
+      "version": 13,
+      "fields": {},
+      "hex": "000000000000000000000100"
+    },
+    {
+      "name": "FetchResponse-v13-opaque-records",
+      "message": "FetchResponse",
+      "version": 13,
+      "fields": {
+        "ThrottleTimeMs": 12,
+        "Responses": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "PartitionIndex": 2,
+                "HighWatermark": 9007199254741000,
+                "LastStableOffset": 9007199254741000,
+                "LogStartOffset": 0,
+                "Records": {
+                  "hex": "ff00"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "0000000c0000000000000200112233445566778899aabbccddeeff0200000002000000200000000000080020000000000008000000000000000001ffffffff03ff00000000"
+    },
+    {
+      "name": "FetchResponse-v13-empty-records",
+      "message": "FetchResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "PartitionIndex": 0,
+                "HighWatermark": 0,
+                "LogStartOffset": 0,
+                "Records": {
+                  "hex": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "000000000000000000000200112233445566778899aabbccddeeff020000000000000000000000000000ffffffffffffffff000000000000000001ffffffff01000000"
+    },
+    {
+      "name": "FetchResponse-v13-unknown-topic",
+      "message": "FetchResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "PartitionIndex": 2,
+                "ErrorCode": 100,
+                "HighWatermark": -1,
+                "LastStableOffset": -1,
+                "LogStartOffset": -1,
+                "Records": null
+              }
+            ]
+          }
+        ]
+      },
+      "hex": "000000000000000000000200112233445566778899aabbccddeeff02000000020064ffffffffffffffffffffffffffffffffffffffffffffffff01ffffffff00000000"
+    },
+    {
+      "name": "FetchResponse-v13-tagged",
+      "message": "FetchResponse",
+      "version": 13,
+      "fields": {
+        "Responses": [
+          {
+            "TopicId": "00112233-4455-6677-8899-aabbccddeeff",
+            "Partitions": [
+              {
+                "PartitionIndex": 2,
+                "HighWatermark": 100,
+                "LastStableOffset": 99,
+                "LogStartOffset": 2,
+                "DivergingEpoch": {
+                  "Epoch": 9,
+                  "EndOffset": 88
+                },
+                "CurrentLeader": {
+                  "LeaderId": -1,
+                  "LeaderEpoch": 11
+                },
+                "SnapshotId": {
+                  "EndOffset": 20,
+                  "Epoch": 3
+                },
+                "AbortedTransactions": [
+                  {
+                    "ProducerId": 99,
+                    "FirstOffset": 20
+                  }
+                ],
+                "PreferredReadReplica": 2,
+                "Records": null,
+                "_unknownTaggedFields": [
+                  {
+                    "tag": 7,
+                    "dataHex": "ff00"
+                  }
+                ]
+              }
+            ],
+            "_unknownTaggedFields": [
+              {
+                "tag": 9,
+                "dataHex": "fe"
+              }
+            ]
+          }
+        ],
+        "_unknownTaggedFields": [
+          {
+            "tag": 5,
+            "dataHex": "0102"
+          }
+        ]
+      },
+      "hex": "000000000000000000000200112233445566778899aabbccddeeff02000000020000000000000000006400000000000000630000000000000002020000000000000063000000000000001400000000020004000d000000090000000000000058000109ffffffff0000000b00020d000000000000001400000003000702ff00010901fe0105020102"
+    }
+  ]
+}

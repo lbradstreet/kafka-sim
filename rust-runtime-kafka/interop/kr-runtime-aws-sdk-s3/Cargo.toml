@@ -1,0 +1,20 @@
+[package]
+name = "kr-runtime-aws-sdk-s3"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "An aws-sdk-s3-shaped facade with a deterministic simulated S3 under kr-runtime"
+license = "Apache-2.0 OR MIT"
+
+[dependencies]
+aws-sdk-s3 = { version = "1", default-features = false }
+aws-smithy-runtime-api = "1"
+aws-smithy-types = "1"
+kr-runtime-tokio = { path = "../kr-runtime-tokio" }
+
+[dev-dependencies]
+kr-runtime = { path = "../..", features = ["test-support"] }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+
+[lints]
+workspace = true

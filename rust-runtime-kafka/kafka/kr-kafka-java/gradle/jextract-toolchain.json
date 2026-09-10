@@ -1,0 +1,34 @@
+{
+  "build": "25-jextract+2-4",
+  "jdk": "25+37-3491",
+  "libclang": "13.0.0",
+  "artifacts": {
+    "macos-aarch64": {
+      "url": "https://download.java.net/java/early_access/jextract/25/2/openjdk-25-jextract+2-4_macos-aarch64_bin.tar.gz",
+      "sha256": "3dd1dd1bde059d271739e2cc2290c64f93f85488c86c01e566c0e374eece798f"
+    },
+    "linux-aarch64": {
+      "url": "https://download.java.net/java/early_access/jextract/25/2/openjdk-25-jextract+2-4_linux-aarch64_bin.tar.gz",
+      "sha256": "0e25e6f6efa042f8758eaec65a873887fd2247fcf2e3e22dcfd7e4179fc8b0ae"
+    },
+    "linux-x64": {
+      "url": "https://download.java.net/java/early_access/jextract/25/2/openjdk-25-jextract+2-4_linux-x64_bin.tar.gz",
+      "sha256": "d0cc481abc1adb16fb9514e1c5e0bfc08d38c29228bece667fb5054ceaffaa42"
+    }
+  },
+  "generation_target": "aarch64-apple-darwin",
+  "normalization": "Require emitted C_LONG and C_LONG_LONG use the canonical OfLong layouts; canonicalize only qualified kr_kafka_h.C_LONG references to kr_kafka_h.C_LONG_LONG on the enumerated LP64 targets. See scripts/kafka-java-bindings.py.",
+  "verification_targets": [
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-gnu"
+  ],
+  "command": [
+    "jextract",
+    "@gradle/jextract-includes.txt",
+    "--target-package",
+    "io.krkafka.ffi",
+    "--output",
+    "<temporary-output>",
+    "kafka/kr-kafka-ffi/include/kr_kafka.h"
+  ]
+}

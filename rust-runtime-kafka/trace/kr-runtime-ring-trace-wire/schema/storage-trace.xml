@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    package="storage_trace_sbe"
+    id="2"
+    version="0"
+    semanticVersion="1.0.0"
+    description="Presentation-only artifact schema for deterministic SimStorage trace viewers."
+    byteOrder="littleEndian">
+
+    <types>
+        <composite name="messageHeader" description="Standard SBE message header.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+
+        <composite name="groupSizeEncoding" description="A trace is deliberately bounded to 64 presentation steps.">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="numInGroup" primitiveType="uint16" maxValue="64"/>
+        </composite>
+
+        <composite name="provenanceEncoding" description="Bounded UTF-8 provenance text.">
+            <type name="length" primitiveType="uint16" maxValue="512"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+
+        <composite name="phaseEncoding" description="Bounded UTF-8 visual phase label.">
+            <type name="length" primitiveType="uint16" maxValue="64"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+
+        <composite name="descriptionEncoding" description="Bounded UTF-8 step description.">
+            <type name="length" primitiveType="uint16" maxValue="512"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+
+        <composite name="summaryEncoding" description="Bounded UTF-8 operation summary.">
+            <type name="length" primitiveType="uint16" maxValue="1024"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+
+        <composite name="byteDataEncoding" description="Bounded bytes retained only for presentation.">
+            <type name="length" primitiveType="uint16" maxValue="4096"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
+        </composite>
+
+        <type name="OptionalU64" primitiveType="uint64" presence="optional"/>
+
+        <enum name="StorageOperation" encodingType="uint8">
+            <validValue name="Open">0</validValue>
+            <validValue name="ScriptFault">1</validValue>
+            <validValue name="WriteAt">2</validValue>
+            <validValue name="ReadAt">3</validValue>
+            <validValue name="SetLen">4</validValue>
+            <validValue name="Len">5</validValue>
+            <validValue name="Sync">6</validValue>
+            <validValue name="Crash">7</validValue>
+            <validValue name="Reopen">8</validValue>
+            <validValue name="Close">9</validValue>
+        </enum>
+
+        <enum name="StorageOutcome" encodingType="uint8">
+            <validValue name="Success">0</validValue>
+            <validValue name="Rejected">1</validValue>
+            <validValue name="Failed">2</validValue>
+            <validValue name="Crash">3</validValue>
+            <validValue name="Recovered">4</validValue>
+        </enum>
+
+        <enum name="CompletionCertainty" encodingType="uint8">
+            <validValue name="NotApplicable">0</validValue>
+            <validValue name="NotApplied">1</validValue>
+            <validValue name="Applied">2</validValue>
+            <validValue name="MayHaveApplied">3</validValue>
+        </enum>
+
+        <enum name="SessionState" encodingType="uint8">
+            <validValue name="Absent">0</validValue>
+            <validValue name="Open">1</validValue>
+            <validValue name="Closed">2</validValue>
+        </enum>
+
+        <composite name="StorageConfigSnapshot" description="Exact bounded SimStorage configuration.">
+            <type name="maxFileBytes" primitiveType="uint64"/>
+            <type name="maxReadBytes" primitiveType="uint64"/>
+            <type name="maxWriteBytes" primitiveType="uint64"/>
+            <type name="maxReadChunk" primitiveType="uint64"/>
+            <type name="maxWriteChunk" primitiveType="uint64"/>
+            <type name="maxInFlight" primitiveType="uint64"/>
+            <type name="maxScriptedFaults" primitiveType="uint64"/>
+            <type name="defaultLatencyNs" primitiveType="uint64"/>
+        </composite>
+
+        <composite name="RuntimeMetadata" description="Terminal deterministic runtime coordinates.">
+            <type name="reproductionSchema" primitiveType="uint32"/>
+            <type name="checkpointSchema" primitiveType="uint32"/>
+            <type name="rngVersion" primitiveType="uint32"/>
+            <type name="stopped" primitiveType="uint8" minValue="0" maxValue="1"/>
+            <type name="seed" primitiveType="uint64"/>
+            <type name="nowNs" primitiveType="uint64"/>
+            <type name="totalSteps" primitiveType="uint64"/>
+            <type name="nextEnqueueSequence" primitiveType="uint64"/>
+            <type name="nextTimerSequence" primitiveType="uint64"/>
+            <type name="nextTimerId" primitiveType="uint64"/>
+            <type name="readyTasks" primitiveType="uint64"/>
+            <type name="liveTimers" primitiveType="uint64"/>
+            <type name="liveTasks" primitiveType="uint64"/>
+        </composite>
+
+        <composite name="StorageStatusSnapshot" description="One passive session and FileIoStatus observation.">
+            <ref name="session" type="SessionState"/>
+            <type name="acceptedLen" primitiveType="uint64"/>
+            <type name="durableLen" primitiveType="uint64"/>
+            <type name="fsyncGateVersion" primitiveType="uint32"/>
+            <type name="hasFsyncGatedData" primitiveType="uint8" minValue="0" maxValue="1"/>
+            <type name="inFlight" primitiveType="uint64"/>
+            <type name="inFlightLimit" primitiveType="uint64"/>
+            <type name="pendingFaults" primitiveType="uint64"/>
+            <type name="faultHits" primitiveType="uint64"/>
+            <type name="closed" primitiveType="uint8" minValue="0" maxValue="1"/>
+        </composite>
+    </types>
+
+    <sbe:message name="StorageTraceArtifact" id="1" description="One complete, bounded presentation trace for SimStorage.">
+        <field name="artifactSchemaVersion" id="1" type="uint32"/>
+        <field name="startedAtNs" id="2" type="uint64"/>
+        <field name="completedAtNs" id="3" type="uint64"/>
+        <field name="config" id="4" type="StorageConfigSnapshot"/>
+        <field name="runtime" id="5" type="RuntimeMetadata"/>
+
+        <group name="steps" id="10" dimensionType="groupSizeEncoding">
+            <field name="sequence" id="11" type="uint32"/>
+            <field name="startedAtNs" id="12" type="uint64"/>
+            <field name="completedAtNs" id="13" type="uint64"/>
+            <field name="operation" id="14" type="StorageOperation"/>
+            <field name="outcome" id="15" type="StorageOutcome"/>
+            <field name="certainty" id="16" type="CompletionCertainty"/>
+            <field name="offset" id="17" type="OptionalU64"/>
+            <field name="transferLength" id="18" type="OptionalU64"/>
+            <field name="resultLength" id="19" type="OptionalU64"/>
+            <field name="before" id="20" type="StorageStatusSnapshot"/>
+            <field name="after" id="21" type="StorageStatusSnapshot"/>
+            <data name="phase" id="30" type="phaseEncoding"/>
+            <data name="description" id="31" type="descriptionEncoding"/>
+            <data name="summary" id="32" type="summaryEncoding"/>
+            <data name="requestBytes" id="33" type="byteDataEncoding"/>
+            <data name="resultBytes" id="34" type="byteDataEncoding"/>
+            <data name="acceptedBytesBefore" id="35" type="byteDataEncoding"/>
+            <data name="durableBytesBefore" id="36" type="byteDataEncoding"/>
+            <data name="acceptedBytesAfter" id="37" type="byteDataEncoding"/>
+            <data name="durableBytesAfter" id="38" type="byteDataEncoding"/>
+        </group>
+
+        <data name="scenario" id="100" type="provenanceEncoding"/>
+        <data name="sourceTest" id="101" type="provenanceEncoding"/>
+        <data name="provider" id="102" type="provenanceEncoding"/>
+        <data name="generator" id="103" type="provenanceEncoding"/>
+    </sbe:message>
+</sbe:messageSchema>

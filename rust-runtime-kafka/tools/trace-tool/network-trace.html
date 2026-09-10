@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network trace explorer</title>
+    <link rel="stylesheet" href="./trace-viewer.css">
+    <link rel="stylesheet" href="./network-trace.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Deterministic diagnostic trace</p>
+        <h1 id="scenario">Network trace</h1>
+        <p
+          class="meta-line"><span id="source-test">—</span> · <span id="provider">—</span></p>
+        <dl class="runtime-line" aria-label="Runtime metadata">
+          <div>
+            <dt>Seed</dt>
+            <dd id="seed">—</dd>
+          </div>
+          <div>
+            <dt>Virtual time</dt>
+            <dd id="runtime-time">—</dd>
+          </div>
+          <div>
+            <dt>Steps</dt>
+            <dd id="runtime-steps">—</dd>
+          </div>
+          <div>
+            <dt>Buffer</dt>
+            <dd id="buffer-capacity">—</dd>
+          </div>
+        </dl>
+        <div class="trace-loader" role="group"
+          aria-label="Network trace artifact">
+          <label for="trace-file">Load generated trace</label>
+          <input id="trace-file" type="file"
+            accept=".json,.js,application/json,text/javascript">
+          <button id="bundled-sample" type="button"
+            disabled>Use bundled sample</button>
+          <span class="trace-source" id="trace-source"
+            aria-live="polite">Bundled sample</span>
+        </div>
+        <p class="trace-error" id="error" role="alert" hidden></p>
+      </header>
+
+      <section aria-labelledby="timeline-heading">
+        <div class="section-heading">
+          <h2 id="timeline-heading">Operations by virtual time</h2>
+          <p
+            class="axis-note">Select a mark or use ← and → to inspect the duplex transition.</p>
+        </div>
+        <div class="legend" aria-label="Operation outcome legend">
+          <span
+            class="legend-item accepted"><i class="swatch accepted"></i>Success</span>
+          <span
+            class="legend-item rejected"><i class="swatch rejected"></i>Rejected</span>
+        </div>
+        <svg id="timeline" role="group"
+          aria-labelledby="timeline-title timeline-desc">
+          <title
+            id="timeline-title">Network operations aligned by virtual time</title>
+          <desc
+            id="timeline-desc">Select a mark to inspect that operation and its directional buffers.</desc>
+        </svg>
+        <p class="caption" id="timeline-caption">—</p>
+
+        <div class="stepper" aria-label="Selected diagnostic step">
+          <button id="previous" type="button"
+            aria-keyshortcuts="ArrowLeft">Previous</button>
+          <div class="range-control">
+            <label
+              for="step-range"><span>Diagnostic step</span><output id="step-output" for="step-range">—</output></label>
+            <input id="step-range" type="range" min="0" max="0" value="0"
+              step="1">
+          </div>
+          <button id="next" type="button"
+            aria-keyshortcuts="ArrowRight">Next</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="duplex-heading">
+        <div class="section-heading">
+          <h2 id="duplex-heading">Duplex buffer transition</h2>
+          <p class="axis-note" id="duplex-summary">—</p>
+        </div>
+        <div class="duplex-transition">
+          <article class="flow-snapshot" aria-labelledby="before-heading">
+            <h3 id="before-heading">Before</h3>
+            <div id="flow-before"></div>
+          </article>
+          <div class="transition-arrow" aria-hidden="true">→</div>
+          <article class="flow-snapshot after" aria-labelledby="after-heading">
+            <h3 id="after-heading">After</h3>
+            <div id="flow-after"></div>
+          </article>
+        </div>
+        <p
+          class="caption">Each row is one sender-to-receiver byte queue. Half-close preserves queued bytes; EOF appears only after that queue drains.</p>
+      </section>
+
+      <section aria-labelledby="occupancy-heading">
+        <div class="section-heading">
+          <h2 id="occupancy-heading">Directional occupancy</h2>
+          <p class="axis-note" id="provider-summary">—</p>
+        </div>
+        <div class="legend" aria-label="Directional occupancy legend">
+          <span
+            class="legend-item accepted"><i class="swatch accepted"></i>Left → Right</span>
+          <span
+            class="legend-item durable"><i class="swatch durable"></i>Right → Left</span>
+        </div>
+        <svg id="occupancy-chart" role="img"
+          aria-labelledby="occupancy-title occupancy-desc">
+          <title
+            id="occupancy-title">Buffered bytes after each network operation</title>
+          <desc
+            id="occupancy-desc">Stepped lines show directional buffer occupancy with the selected step highlighted.</desc>
+        </svg>
+      </section>
+
+      <article class="selected-detail" aria-labelledby="detail-heading"
+        aria-live="polite">
+        <div class="detail-context">
+          <div class="detail-title">
+            <strong id="detail-heading">Selected step</strong>
+            <span class="outcome" id="detail-outcome">—</span>
+          </div>
+          <p class="detail-description" id="detail-description">—</p>
+          <p class="detail-summary" id="detail-summary">—</p>
+          <div class="detail-meta" id="detail-meta"></div>
+        </div>
+        <pre class="json-dump" id="detail-fields"
+          aria-label="Selected step fields">{}</pre>
+      </article>
+    </main>
+
+    <script src="./trace-viewer-core.js"></script>
+    <script src="./network-trace-model.js"></script>
+    <script src="./network-trace-data.js"></script>
+    <script src="./trace-viewer-ui.js"></script>
+    <script src="./network-trace-viewer.js"></script>
+  </body>
+</html>

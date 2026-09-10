@@ -1,0 +1,6 @@
+{
+  "kafka/kr-kafka-ffi/include/kr_kafka.h": "3bab369e2b6eed50cb703319a6c758a13ecad8fc90f9512d21747b37ee40a211",
+  "kafka/kr-kafka-java/gradle/jextract-includes.txt": "421ab8dc0b400c09ad884841b41035ac17d40c16bec480e8b4d6711bb38016cf",
+  "kafka/kr-kafka-java/gradle/jextract-toolchain.json": "4a50b6bb8e139e04afdd8b321254455be75f8db9108ec6aebaade6d0dd18a0b8",
+  "scripts/kafka-java-bindings.py": "2badce8d2650ccb5a11be444d7458aef7f836e29eb7df4c18e8d718fa2027b01"
+}

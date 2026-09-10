@@ -1,0 +1,22 @@
+[package]
+name = "quarry"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "A leased work queue that dogfoods kr-runtime"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[dependencies]
+crc32c = "=0.6.8"
+kr-runtime-ring = { path = "../../storage/kr-runtime-ring" }
+kr-runtime = { path = "../.." }
+
+[dev-dependencies]
+kr-runtime = { path = "../..", features = ["test-support"] }
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+kr-runtime-ring = { path = "../../storage/kr-runtime-ring", features = ["test-support"] }
+kr-runtime-trace-tool = { path = "../../tools/trace-tool" }
+
+[lints]
+workspace = true

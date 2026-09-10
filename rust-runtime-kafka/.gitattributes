@@ -1,0 +1,10 @@
+tools/trace-tool/testdata/*.sbe binary
+
+# Preserve the byte-for-byte pinned Apache Kafka sources and checksum manifest.
+schemas/*.json -text -whitespace
+schemas/README.md -text -whitespace
+schemas/PROVENANCE.lock -text
+
+# Preserve canonical jextract output and the Windows wrapper verbatim.
+kafka/kr-kafka-java/src/main/java/io/krkafka/ffi/*.java -text -whitespace
+kafka/kr-kafka-java/gradlew.bat -text whitespace=cr-at-eol

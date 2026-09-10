@@ -1,0 +1,11 @@
+{
+  "producer-comparison-model.js": "e7f3d4b3c86fcefdf6c4e564709104a4233f3cb5de8e7f2b9786d1076d852d45",
+  "producer-comparison-viewer.js": "0561d7fc032f537faa8c176870601e813d35b15d6d31d670aa8380e469a2fd2a",
+  "producer-experiment-model.js": "5d92ebeb62b8a2d6cd08f419b296f4883d8bf9d6ff08083668f93b2acab310f8",
+  "producer-experiment-viewer.js": "b0d31e99a01cf6501d828145d51e441c38d573c462d31fbe453bb253b78237ed",
+  "producer-experiment.css": "b87eea4ef490404886be54ce06660b6549e372bf2753b55d276aaf8d30672a6c",
+  "producer-experiment.html": "a827303ee6d746f224177fd0af5f1369dd465838beb032beb41049a2e39cd7ab",
+  "trace-viewer-core.js": "700d377bcf67f83879fc196dfdb05cd0236fa1a36c083d4d603161fba86c303c",
+  "trace-viewer-ui.js": "0543781eb5d20e3cb684a919fb379389e29632e067704d006f1f53d1f3bac6be",
+  "trace-viewer.css": "4ea160098364018597caf7b68b788a352aa3f3c678272d6f3401f7dbbb991635"
+}

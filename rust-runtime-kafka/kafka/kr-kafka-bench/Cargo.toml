@@ -1,0 +1,22 @@
+[package]
+name = "kr-kafka-bench"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Open-loop Kafka host benchmark and measurement contract"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[dependencies]
+kr-kafka-host = { path = "../kr-kafka-host" }
+kr-kafka-producer-host = { path = "../kr-kafka-producer-host" }
+kr-kafka-producer = { path = "../kr-kafka-producer" }
+kr-runtime = { path = "../.." }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.150"
+
+[dev-dependencies]
+kr-runtime-io = { path = "../../io/kr-runtime-io" }
+
+[lints]
+workspace = true

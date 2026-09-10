@@ -1,0 +1,118 @@
+[package]
+name = "kr-runtime"
+version = "0.1.0"
+edition = "2024"
+rust-version.workspace = true
+description = "Single-owner async runtimes for deterministic simulation and host execution"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[features]
+benchmarks = ["dep:criterion"]
+test-support = []
+
+[dependencies]
+criterion = { version = "0.7", optional = true }
+kr-runtime-trace-wire = { path = "trace/kr-runtime-trace-wire" }
+
+[dev-dependencies]
+kr-runtime = { path = ".", features = ["test-support"] }
+
+[[bench]]
+name = "runtime_trace"
+harness = false
+required-features = ["benchmarks"]
+
+[[bench]]
+name = "executor_parity"
+harness = false
+required-features = ["benchmarks"]
+
+[[bench]]
+name = "scheduler_overhead"
+harness = false
+required-features = ["benchmarks"]
+
+[[bench]]
+name = "host_overhead"
+harness = false
+required-features = ["benchmarks"]
+
+[lints]
+workspace = true
+
+[workspace]
+members = [
+    ".",
+    "bytes/kr-shared-bytes",
+    "dogfood/quarry",
+    "interop/kr-runtime-aws-sdk-s3",
+    "interop/kr-runtime-tokio",
+    "io/kr-runtime-io",
+    "io/kr-runtime-io-uring",
+    "io/kr-runtime-io-readiness",
+    "storage/kr-runtime-ring-uring",
+    "storage/kr-runtime-ring",
+    "trace/kr-runtime-trace-wire",
+    "tools/trace-tool",
+    "tools/kafka-codegen",
+    "kafka/kr-kafka-protocol",
+    "kafka/kr-kafka-client",
+    "kafka/kr-kafka-record",
+    "kafka/kr-kafka-producer",
+    "kafka/kr-kafka-broker-model",
+    "kafka/kr-kafka-host",
+    "kafka/kr-kafka-producer-host",
+    "kafka/kr-kafka-sim",
+    "kafka/kr-kafka-sim-ffi",
+    "kafka/kr-kafka-experiments",
+    "kafka/kr-kafka-bench",
+    "kafka/kr-kafka-ffi",
+    "trace/kr-runtime-ring-trace-wire",
+]
+# Bare cargo commands cover the whole workspace, matching --workspace; the
+# io_uring crates compile to empty stubs off Linux, so this is portable.
+default-members = [
+    ".",
+    "bytes/kr-shared-bytes",
+    "dogfood/quarry",
+    "io/kr-runtime-io",
+    "io/kr-runtime-io-uring",
+    "io/kr-runtime-io-readiness",
+    "storage/kr-runtime-ring-uring",
+    "storage/kr-runtime-ring",
+    "trace/kr-runtime-trace-wire",
+    "tools/trace-tool",
+    "tools/kafka-codegen",
+    "kafka/kr-kafka-protocol",
+    "kafka/kr-kafka-client",
+    "kafka/kr-kafka-record",
+    "kafka/kr-kafka-producer",
+    "kafka/kr-kafka-broker-model",
+    "kafka/kr-kafka-host",
+    "kafka/kr-kafka-producer-host",
+    "kafka/kr-kafka-sim",
+    "kafka/kr-kafka-experiments",
+    "kafka/kr-kafka-bench",
+    "kafka/kr-kafka-ffi",
+    "trace/kr-runtime-ring-trace-wire",
+]
+resolver = "3"
+
+[workspace.package]
+rust-version = "1.96.1"
+
+[workspace.lints.rust]
+unreachable_pub = "deny"
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+
+# Keep file/line backtraces while avoiding the compile time and disk cost of
+# full debugger metadata during the edit-test loop.
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.test]
+debug = "line-tables-only"
