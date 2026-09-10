@@ -73,6 +73,7 @@ buildCache {
 }
 
 include 'clients',
+    'clients-dst',
     'clients:clients-integration-tests',
     'connect:api',
     'connect:basic-auth-extension',

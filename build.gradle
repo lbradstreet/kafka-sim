@@ -345,7 +345,7 @@ subprojects {
 
   // We use the shadow plugin for the jmh-benchmarks module and the `-all` jar can get pretty large, so
   // don't publish it
-  def shouldPublish = !project.name.equals('jmh-benchmarks')
+  def shouldPublish = !['clients-dst', 'jmh-benchmarks'].contains(project.name)
   def shouldPublishWithShadow = (['clients'].contains(project.name))
 
   if (shouldPublish) {
@@ -2362,6 +2362,27 @@ project(':raft') {
 
   clean.doFirst {
     delete "${layout.buildDirectory.get().asFile.path}/kafka/"
+  }
+
+  javadoc {
+    enabled = false
+  }
+}
+
+// Deterministic tests for the existing Java producer; this module has no production sources.
+project(':clients-dst') {
+  dependencies {
+    testImplementation project(':clients')
+    testImplementation testFixtures(project(':clients'))
+    testImplementation libs.nettyBuffer
+    testImplementation libs.nettyTransport
+    testImplementation libs.junitJupiter
+    testImplementation testLog4j2Libs
+    testRuntimeOnly runtimeTestLibs
+  }
+
+  checkstyle {
+    configProperties = checkstyleConfigProperties("import-control-clients-dst.xml")
   }
 
   javadoc {
