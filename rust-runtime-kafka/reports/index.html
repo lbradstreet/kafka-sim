@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kafka deterministic simulation reports</title>
+<style>
+:root { color-scheme: light dark; font: 17px/1.55 system-ui, sans-serif; }
+body { max-width: 72rem; margin: 3rem auto; padding: 0 1.25rem; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); line-height: 1.15; }
+.intro { max-width: 52rem; }
+nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); gap: 1rem; margin-top: 2rem; }
+article { border: 1px solid #808080; border-radius: .6rem; padding: 1.25rem; }
+h2 { margin: 0; font-size: 1.15rem; }
+a { color: LinkText; } a:focus-visible { outline: 3px solid Highlight; outline-offset: 4px; }
+</style></head><body><main><h1>Kafka deterministic simulation reports</h1>
+<p class="intro">Freshly generated producer experiments and comparisons. Each page includes its scripts, styles and result data. Open this index in a browser after checking out the repository; no server or raw evidence files are required.</p>
+<p class="intro">The admission galleries show seed 0. Their measurements are previews of the individual workloads, not a verdict on the full multi-seed campaign. Latency statistics describe acknowledged records; compare refused and failed populations alongside them.</p>
+<nav aria-label="Report galleries">
+<article><h2><a href="native-full/index.html">Native producer: Full catalogue</a></h2><p>146 replay-verified runs across 37 scenario families.</p></article>
+<article><h2><a href="classic-test/index.html">Classic Java and native: Test catalogue</a></h2><p>292 replay-verified matched pairs across both original and common profiles. Fault-exposure gaps remain visible.</p></article>
+<article><h2><a href="admission-independent/index.html">Admission: independent demand</a></h2><p>Seed 0; Shared and PartitionPressure at three offered rates, with healthy demand continuing during the outage.</p></article>
+<article><h2><a href="admission-shared/index.html">Admission: Shared baseline</a></h2><p>Seed 0; the original crash/restart workload at three offered rates.</p></article>
+<article><h2><a href="admission-pressure/index.html">Admission: PartitionPressure</a></h2><p>Seed 0; the original crash/restart workload with partition-pressure admission.</p></article>
+<article><h2><a href="admission-skew/index.html">Admission: skewed demand</a></h2><p>Seed 0; 12 runs comparing Shared and PartitionPressure under concentrated partition demand.</p></article>
+</nav><p><a href="README.md">Scope and regeneration instructions</a></p></main></body></html>

@@ -1,0 +1,798 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java vs native producer comparisons</title><style>:root {
+  color-scheme: light dark;
+  --font-size-base: 16px;
+  --background: light-dark(oklch(0.985 0.004 255), oklch(0.17 0.012 255));
+  --foreground: light-dark(oklch(0.22 0.018 255), oklch(0.92 0.008 255));
+  --muted: light-dark(oklch(0.94 0.008 255), oklch(0.24 0.012 255));
+  --muted-foreground: light-dark(oklch(0.44 0.018 255), oklch(0.72 0.014 255));
+  --border: light-dark(oklch(0.82 0.012 255), oklch(0.37 0.016 255));
+  --selected: light-dark(oklch(0.48 0.15 250), oklch(0.75 0.13 245));
+  --accepted: light-dark(oklch(0.52 0.14 250), oklch(0.73 0.13 245));
+  --durable: light-dark(oklch(0.48 0.13 155), oklch(0.75 0.12 155));
+  --rejected: light-dark(oklch(0.57 0.16 75), oklch(0.78 0.13 75));
+  --uncertain: light-dark(oklch(0.55 0.15 95), oklch(0.82 0.13 95));
+  --unknown: light-dark(oklch(0.48 0.04 220), oklch(0.75 0.04 220));
+  --destructive: light-dark(oklch(0.52 0.18 25), oklch(0.72 0.17 25));
+  --recovered: light-dark(oklch(0.5 0.14 300), oklch(0.76 0.13 300));
+  --selection-fill: color-mix(in oklch, var(--selected) 12%, transparent);
+  --code-background: light-dark(oklch(0.965 0.008 255), oklch(0.135 0.015 255));
+  --syntax-key: light-dark(oklch(0.43 0.16 250), oklch(0.78 0.13 245));
+  --syntax-string: light-dark(oklch(0.4 0.12 155), oklch(0.79 0.11 155));
+  --syntax-number: light-dark(oklch(0.46 0.17 305), oklch(0.79 0.13 305));
+  --syntax-boolean: light-dark(oklch(0.46 0.14 65), oklch(0.83 0.13 75));
+  --syntax-null: light-dark(oklch(0.5 0.16 25), oklch(0.79 0.14 25));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--font-size-base);
+}
+
+main {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  padding: 1.25rem clamp(0.75rem, 3vw, 2rem) 2.5rem;
+}
+
+h1,
+h2,
+p,
+dl {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-weight: 500;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.eyebrow,
+.caption,
+.meta-line,
+.axis-note,
+.detail-meta {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.eyebrow {
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meta-line {
+  margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.runtime-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.runtime-line div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.runtime-line dt {
+  color: var(--muted-foreground);
+}
+
+.runtime-line dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trace-loader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.trace-loader label {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.trace-loader input[type="file"] {
+  min-width: min(100%, 17rem);
+  max-width: 100%;
+  font-size: 0.82rem;
+}
+
+.trace-source {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.trace-error {
+  margin: 0.45rem 0 0;
+  color: var(--destructive);
+  font-size: 0.82rem;
+}
+
+section,
+.selected-detail {
+  margin-top: 1.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-heading p,
+.caption {
+  margin-bottom: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.35rem 0 0.65rem;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.swatch {
+  width: 0.8rem;
+  height: 0.18rem;
+  background: currentColor;
+}
+
+.swatch.accepted,
+.legend-item.accepted {
+  color: var(--accepted);
+}
+
+.swatch.durable,
+.legend-item.durable {
+  color: var(--durable);
+}
+
+.swatch.rejected,
+.legend-item.rejected {
+  color: var(--rejected);
+}
+
+.swatch.uncertain,
+.legend-item.uncertain {
+  color: var(--uncertain);
+}
+
+.swatch.unknown,
+.legend-item.unknown {
+  color: var(--unknown);
+}
+
+.swatch.crash,
+.legend-item.crash {
+  color: var(--destructive);
+}
+
+.swatch.recovered,
+.legend-item.recovered {
+  color: var(--recovered);
+}
+
+.dash {
+  background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent
+    5px 8px);
+}
+
+svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  color: var(--foreground);
+  overflow: visible;
+}
+
+.chart-grid,
+.chart-axis,
+.lane-line,
+.strip-outline {
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-grid {
+  opacity: 0.62;
+}
+
+.chart-label,
+.axis-label {
+  fill: var(--muted-foreground);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.lane-label {
+  fill: var(--foreground);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.trace-step {
+  cursor: pointer;
+}
+
+.trace-step:focus {
+  outline: none;
+}
+
+.trace-step .duration-line {
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.trace-step.success .duration-line,
+.trace-step.success .completion-mark {
+  color: var(--accepted);
+  fill: var(--accepted);
+  stroke: var(--accepted);
+}
+
+.trace-step.rejected .duration-line,
+.trace-step.rejected .completion-mark {
+  color: var(--rejected);
+  fill: var(--rejected);
+  stroke: var(--rejected);
+}
+
+.trace-step.uncertain .duration-line,
+.trace-step.uncertain .completion-mark {
+  color: var(--uncertain);
+  fill: var(--uncertain);
+  stroke: var(--uncertain);
+}
+
+.trace-step.unknown .duration-line,
+.trace-step.unknown .completion-mark {
+  color: var(--unknown);
+  fill: var(--unknown);
+  stroke: var(--unknown);
+}
+
+.trace-step.crash .duration-line,
+.trace-step.crash .completion-mark {
+  color: var(--destructive);
+  fill: var(--destructive);
+  stroke: var(--destructive);
+}
+
+.trace-step.recovered .duration-line,
+.trace-step.recovered .completion-mark {
+  color: var(--recovered);
+  fill: var(--recovered);
+  stroke: var(--recovered);
+}
+
+.trace-step .selection-halo {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.trace-step.selected .selection-halo,
+.trace-step:focus .selection-halo {
+  stroke: var(--selected);
+}
+
+.trace-step:focus .selection-halo {
+  stroke-width: 4;
+}
+
+.selection-band {
+  fill: var(--selection-fill);
+  stroke: var(--selected);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: auto minmax(8rem, 1fr) auto;
+  align-items: end;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--muted);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.range-control {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.range-control label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--selected);
+}
+
+.selected-detail {
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: color-mix(in oklch, var(--muted) 52%, transparent);
+}
+
+.detail-context {
+  box-sizing: border-box;
+  block-size: clamp(8rem, 20vh, 12rem);
+  block-size: clamp(8rem, 20svh, 12rem);
+  margin-bottom: 0.45rem;
+  padding-inline-end: 0.25rem;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.detail-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.detail-title strong {
+  font-weight: 500;
+}
+
+.outcome {
+  display: inline-block;
+  padding: 0.1rem 0.42rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.outcome.success {
+  color: var(--accepted);
+}
+
+.outcome.rejected {
+  color: var(--rejected);
+}
+
+.outcome.uncertain {
+  color: var(--uncertain);
+}
+
+.outcome.unknown {
+  color: var(--unknown);
+}
+
+.outcome.crash {
+  color: var(--destructive);
+}
+
+.outcome.recovered {
+  color: var(--recovered);
+}
+
+.detail-description,
+.detail-summary {
+  margin-bottom: 0.3rem;
+  overflow-wrap: anywhere;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin-bottom: 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+pre {
+  margin: 0;
+  color: var(--foreground);
+  font: 0.78rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.json-dump {
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: clamp(12rem, 32vh, 22rem);
+  block-size: clamp(12rem, 32svh, 22rem);
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  overflow: auto;
+  background: var(--code-background);
+  box-shadow: inset 3px 0 var(--selected);
+  scrollbar-gutter: stable;
+  tab-size: 2;
+}
+
+.json-key {
+  color: var(--syntax-key);
+  font-weight: 600;
+}
+
+.json-string {
+  color: var(--syntax-string);
+}
+
+.json-number {
+  color: var(--syntax-number);
+}
+
+.json-boolean {
+  color: var(--syntax-boolean);
+  font-weight: 600;
+}
+
+.json-null {
+  color: var(--syntax-null);
+  font-style: italic;
+}
+
+.json-dump::selection,
+.json-dump ::selection {
+  color: var(--background);
+  background: var(--selected);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding-inline: 0.7rem;
+  }
+
+  .stepper {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .range-control {
+    grid-row: 1;
+    grid-column: 1 / -1;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .json-dump {
+    block-size: clamp(10rem, 38vh, 18rem);
+    block-size: clamp(10rem, 38svh, 18rem);
+  }
+
+  .detail-context {
+    block-size: clamp(9rem, 24vh, 13rem);
+    block-size: clamp(9rem, 24svh, 13rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+:root {
+  --variant-1: light-dark(#1766a1, #7cbdf0);
+  --variant-2: light-dark(#a44512, #f3ae7b);
+  --variant-3: light-dark(#00745d, #6ad8b8);
+  --variant-4: light-dark(#8945ad, #d1a1ed);
+  --variant-5: light-dark(#a33058, #f199b6);
+  --variant-6: light-dark(#686216, #d4ce72);
+}
+main {
+  width: min(100%, 1440px);
+}
+section,
+#scatter-section {
+  margin-block: 1.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.look-for {
+  border-left: 3px solid var(--variant-1);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.experiment-prose {
+  max-width: 92ch;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.experiment-prose li + li {
+  margin-top: .6rem;
+}
+.controls,
+.run-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1rem;
+  margin-block: .65rem;
+}
+.controls label,
+.run-row label {
+  display: inline-flex;
+  gap: .4rem;
+  align-items: center;
+}
+input[type="number"] {
+  width: 8rem;
+}
+input,
+select,
+button {
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .35rem;
+  font: inherit;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--variant-1);
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: .6;
+}
+:focus-visible {
+  outline: 3px solid var(--selected);
+  outline-offset: 3px;
+}
+summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+svg {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+svg text {
+  fill: var(--muted-foreground);
+  font-size: 11px;
+}
+svg .plot-label {
+  fill: var(--foreground);
+}
+.chart-grid {
+  stroke: var(--border);
+  stroke-width: .5;
+}
+.chart-readout {
+  min-height: 2.3em;
+  font-size: .8rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.crosshair {
+  stroke: var(--foreground);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  pointer-events: none;
+}
+#bands {
+  touch-action: none;
+  cursor: crosshair;
+}
+.brush-selection {
+  fill: var(--selection-fill);
+  stroke: var(--selected);
+}
+.run-swatch {
+  width: 2.2rem;
+  height: .7rem;
+}
+.run-row {
+  padding-block: .25rem;
+  border-bottom: 1px solid var(--border);
+}
+.run-row code {
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: auto;
+  max-height: 36rem;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .8rem;
+  font-variant-numeric: tabular-nums;
+}
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: .5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+th {
+  position: sticky;
+  top: 0;
+  background: var(--background);
+}
+.canvas-scroll {
+  position: relative;
+  max-height: 32rem;
+  overflow: auto;
+}
+#scatter-section {
+  position: relative;
+}
+.canvas-crosshair {
+  position: absolute;
+  width: 0;
+  border-left: 1px dashed var(--foreground);
+  pointer-events: none;
+}
+canvas {
+  display: block;
+  width: 100%;
+}
+#tooltip {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  padding: .6rem .75rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: 0 3px 14px #0002;
+  max-width: min(28rem, calc(100vw - 24px));
+  font-size: .8rem;
+  white-space: pre-line;
+}
+#topology .partition-link {
+  transition: x1 80ms, x2 80ms;
+}
+#topology rect {
+  stroke: var(--border);
+}
+.broker-heading {
+  margin: 1rem 0 .3rem;
+  font-size: .95rem;
+  font-weight: 500;
+}
+.time-controls {
+  background: var(--background);
+}
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+}
+.comparison-grid article {
+  min-width: 0;
+}
+.comparison-status {
+  border-left: 3px solid var(--variant-3);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.comparison-gap {
+  border-color: var(--variant-4);
+  font-weight: 600;
+}
+#comparison-pair {
+  max-width: 100%;
+}
+.stepper label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+#step-range {
+  flex: 1;
+  min-width: 8rem;
+}
+@media (max-width: 600px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .run-row {
+    gap: .45rem;
+  }
+  .controls {
+    align-items: start;
+  }
+  .caption {
+    line-height: 1.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #topology .partition-link {
+    transition: none;
+  }
+}
+</style><main><p class="eyebrow">Deterministic producer experiments</p><h1>Java vs native producer</h1><p>Choose a matched pair to overlay delivery, admission, latency, outstanding work and broker traffic on a shared simulation clock.</p><p>All values below are <strong>classic Java / native</strong>. Common adjusts unsupported controls; original preserves the original manifest. Closed-loop counts can differ because deliveries feed the source. P99 includes acknowledged records only.</p><p>292 matched pairs, each replay verified. Fault-exposure gaps and semantic limits remain visible on every detail page.</p><h2>Test-size comparisons</h2><div class="table-scroll"><table><thead><tr><th>Scenario</th><th>Variant</th><th>Size</th><th>Profile</th><th>Acknowledged</th><th>Refused</th><th>P99 (ms)</th><th>Comparison</th></tr></thead><tbody><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=0">baseline.asymmetric-wan-broker</a></td><td>i1-window1024k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>178.191 / 87.000</td><td>checked</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=1">baseline.asymmetric-wan-broker</a></td><td>i1-window64k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>178.191 / 87.000</td><td>checked</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=2">baseline.asymmetric-wan-broker</a></td><td>i5-window1024k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>127.239 / 87.000</td><td>checked</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=3">baseline.asymmetric-wan-broker</a></td><td>i5-window64k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>127.239 / 87.000</td><td>checked</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=4">baseline.asymmetric-wan-broker</a></td><td>i1-window1024k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>178.191 / 87.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=5">baseline.asymmetric-wan-broker</a></td><td>i1-window64k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>178.191 / 87.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=6">baseline.asymmetric-wan-broker</a></td><td>i5-window1024k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>127.239 / 87.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.asymmetric-wan-broker--test--1.html#pair=7">baseline.asymmetric-wan-broker</a></td><td>i5-window64k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>127.239 / 87.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=0">baseline.bursty-onoff</a></td><td>burst200</td><td>test</td><td>common</td><td>384 / 384</td><td>0 / 0</td><td>8.224 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=1">baseline.bursty-onoff</a></td><td>burst50</td><td>test</td><td>common</td><td>150 / 150</td><td>0 / 0</td><td>6.808 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=2">baseline.bursty-onoff</a></td><td>burst800</td><td>test</td><td>common</td><td>384 / 384</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=3">baseline.bursty-onoff</a></td><td>burst200</td><td>test</td><td>original</td><td>384 / 384</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=4">baseline.bursty-onoff</a></td><td>burst50</td><td>test</td><td>original</td><td>150 / 150</td><td>0 / 0</td><td>6.808 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.bursty-onoff--test--1.html#pair=5">baseline.bursty-onoff</a></td><td>burst800</td><td>test</td><td>original</td><td>384 / 384</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=0">baseline.closed-loop-inflight</a></td><td>k1-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 7.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=1">baseline.closed-loop-inflight</a></td><td>k1-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.215 / 7.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=2">baseline.closed-loop-inflight</a></td><td>k16-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>11.617 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=3">baseline.closed-loop-inflight</a></td><td>k16-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>11.216 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=4">baseline.closed-loop-inflight</a></td><td>k256-i1</td><td>test</td><td>common</td><td>512 / 512</td><td>0 / 0</td><td>15.445 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=5">baseline.closed-loop-inflight</a></td><td>k256-i5</td><td>test</td><td>common</td><td>512 / 512</td><td>0 / 0</td><td>12.235 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=6">baseline.closed-loop-inflight</a></td><td>k4-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=7">baseline.closed-loop-inflight</a></td><td>k4-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=8">baseline.closed-loop-inflight</a></td><td>k64-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>7.020 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=9">baseline.closed-loop-inflight</a></td><td>k64-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>6.414 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=10">baseline.closed-loop-inflight</a></td><td>k1-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 7.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=11">baseline.closed-loop-inflight</a></td><td>k1-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.215 / 7.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=12">baseline.closed-loop-inflight</a></td><td>k16-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>11.617 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=13">baseline.closed-loop-inflight</a></td><td>k16-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>11.216 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=14">baseline.closed-loop-inflight</a></td><td>k256-i1</td><td>test</td><td>original</td><td>512 / 512</td><td>0 / 0</td><td>15.445 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--1.html#pair=15">baseline.closed-loop-inflight</a></td><td>k256-i5</td><td>test</td><td>original</td><td>512 / 512</td><td>0 / 0</td><td>12.235 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--2.html#pair=0">baseline.closed-loop-inflight</a></td><td>k4-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--2.html#pair=1">baseline.closed-loop-inflight</a></td><td>k4-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.212 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--2.html#pair=2">baseline.closed-loop-inflight</a></td><td>k64-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>7.020 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.closed-loop-inflight--test--2.html#pair=3">baseline.closed-loop-inflight</a></td><td>k64-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>6.414 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=0">baseline.compression</a></td><td>random0-zstd0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=1">baseline.compression</a></td><td>random0-zstd1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=2">baseline.compression</a></td><td>random0-zstd3</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=3">baseline.compression</a></td><td>random1-zstd0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=4">baseline.compression</a></td><td>random1-zstd1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=5">baseline.compression</a></td><td>random1-zstd3</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=6">baseline.compression</a></td><td>random0-zstd0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=7">baseline.compression</a></td><td>random0-zstd1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=8">baseline.compression</a></td><td>random0-zstd3</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=9">baseline.compression</a></td><td>random1-zstd0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=10">baseline.compression</a></td><td>random1-zstd1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.compression--test--1.html#pair=11">baseline.compression</a></td><td>random1-zstd3</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>13.239 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=0">baseline.linger-sweep</a></td><td>linger0-skip0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=1">baseline.linger-sweep</a></td><td>linger0-skip1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=2">baseline.linger-sweep</a></td><td>linger1-skip0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=3">baseline.linger-sweep</a></td><td>linger1-skip1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=4">baseline.linger-sweep</a></td><td>linger20-skip0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>21.212 / 22.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=5">baseline.linger-sweep</a></td><td>linger20-skip1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>21.212 / 22.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=6">baseline.linger-sweep</a></td><td>linger5-skip0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=7">baseline.linger-sweep</a></td><td>linger5-skip1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=8">baseline.linger-sweep</a></td><td>linger0-skip0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=9">baseline.linger-sweep</a></td><td>linger0-skip1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=10">baseline.linger-sweep</a></td><td>linger1-skip0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=11">baseline.linger-sweep</a></td><td>linger1-skip1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>5.215 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=12">baseline.linger-sweep</a></td><td>linger20-skip0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>21.212 / 22.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=13">baseline.linger-sweep</a></td><td>linger20-skip1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>21.212 / 22.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=14">baseline.linger-sweep</a></td><td>linger5-skip0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.linger-sweep--test--1.html#pair=15">baseline.linger-sweep</a></td><td>linger5-skip1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=0">baseline.open-loop-rate</a></td><td>rate2000</td><td>test</td><td>common</td><td>492 / 512</td><td>20 / 0</td><td>9.212 / 7.000</td><td>checked</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=1">baseline.open-loop-rate</a></td><td>rate32000</td><td>test</td><td>common</td><td>206 / 256</td><td>306 / 256</td><td>6.631 / 7.750</td><td>checked</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=2">baseline.open-loop-rate</a></td><td>rate500</td><td>test</td><td>common</td><td>507 / 512</td><td>5 / 0</td><td>7.213 / 7.000</td><td>checked</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=3">baseline.open-loop-rate</a></td><td>rate8000</td><td>test</td><td>common</td><td>429 / 512</td><td>83 / 0</td><td>7.837 / 7.125</td><td>checked</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=4">baseline.open-loop-rate</a></td><td>rate2000</td><td>test</td><td>original</td><td>492 / 512</td><td>20 / 0</td><td>9.212 / 6.500</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=5">baseline.open-loop-rate</a></td><td>rate32000</td><td>test</td><td>original</td><td>206 / 288</td><td>306 / 224</td><td>6.631 / 7.094</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=6">baseline.open-loop-rate</a></td><td>rate500</td><td>test</td><td>original</td><td>507 / 512</td><td>5 / 0</td><td>7.213 / 7.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.open-loop-rate--test--1.html#pair=7">baseline.open-loop-rate</a></td><td>rate8000</td><td>test</td><td>original</td><td>429 / 512</td><td>83 / 0</td><td>7.837 / 6.875</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=0">baseline.partition-admission-skew</a></td><td>hot-rate32000-pressure</td><td>test</td><td>common</td><td>6,408 / 3,224</td><td>0 / 3,184</td><td>711.182 / 4.594</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=1">baseline.partition-admission-skew</a></td><td>hot-rate32000-shared</td><td>test</td><td>common</td><td>6,408 / 3,224</td><td>0 / 3,184</td><td>711.182 / 4.594</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=2">baseline.partition-admission-skew</a></td><td>hot-rate8000-pressure</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>30.829 / 2.875</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=3">baseline.partition-admission-skew</a></td><td>hot-rate8000-shared</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>30.829 / 2.875</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=4">baseline.partition-admission-skew</a></td><td>skew90-rate32000-pressure</td><td>test</td><td>common</td><td>6,408 / 3,162</td><td>0 / 3,246</td><td>619.412 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=5">baseline.partition-admission-skew</a></td><td>skew90-rate32000-shared</td><td>test</td><td>common</td><td>6,408 / 3,162</td><td>0 / 3,246</td><td>619.412 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=6">baseline.partition-admission-skew</a></td><td>skew90-rate8000-pressure</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.439 / 8.056</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=7">baseline.partition-admission-skew</a></td><td>skew90-rate8000-shared</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.439 / 8.056</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=8">baseline.partition-admission-skew</a></td><td>sparse1024-rate32000-pressure</td><td>test</td><td>common</td><td>6,408 / 2,987</td><td>0 / 3,421</td><td>619.412 / 8.750</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=9">baseline.partition-admission-skew</a></td><td>sparse1024-rate32000-shared</td><td>test</td><td>common</td><td>6,408 / 2,987</td><td>0 / 3,421</td><td>619.412 / 8.750</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=10">baseline.partition-admission-skew</a></td><td>sparse1024-rate8000-pressure</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.424 / 8.194</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=11">baseline.partition-admission-skew</a></td><td>sparse1024-rate8000-shared</td><td>test</td><td>common</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.424 / 8.194</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=12">baseline.partition-admission-skew</a></td><td>hot-rate32000-pressure</td><td>test</td><td>original</td><td>6,408 / 2,424</td><td>0 / 3,984</td><td>711.182 / 4.656</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=13">baseline.partition-admission-skew</a></td><td>hot-rate32000-shared</td><td>test</td><td>original</td><td>6,408 / 3,224</td><td>0 / 3,184</td><td>711.182 / 4.594</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=14">baseline.partition-admission-skew</a></td><td>hot-rate8000-pressure</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>30.829 / 2.875</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--1.html#pair=15">baseline.partition-admission-skew</a></td><td>hot-rate8000-shared</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>30.829 / 2.875</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=0">baseline.partition-admission-skew</a></td><td>skew90-rate32000-pressure</td><td>test</td><td>original</td><td>6,408 / 2,488</td><td>0 / 3,920</td><td>619.412 / 8.229</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=1">baseline.partition-admission-skew</a></td><td>skew90-rate32000-shared</td><td>test</td><td>original</td><td>6,408 / 3,162</td><td>0 / 3,246</td><td>619.412 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=2">baseline.partition-admission-skew</a></td><td>skew90-rate8000-pressure</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.439 / 8.056</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=3">baseline.partition-admission-skew</a></td><td>skew90-rate8000-shared</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.439 / 8.056</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=4">baseline.partition-admission-skew</a></td><td>sparse1024-rate32000-pressure</td><td>test</td><td>original</td><td>6,408 / 2,369</td><td>0 / 4,039</td><td>619.412 / 8.750</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=5">baseline.partition-admission-skew</a></td><td>sparse1024-rate32000-shared</td><td>test</td><td>original</td><td>6,408 / 2,984</td><td>0 / 3,424</td><td>619.412 / 8.750</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=6">baseline.partition-admission-skew</a></td><td>sparse1024-rate8000-pressure</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.424 / 8.194</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-admission-skew--test--2.html#pair=7">baseline.partition-admission-skew</a></td><td>sparse1024-rate8000-shared</td><td>test</td><td>original</td><td>1,608 / 1,608</td><td>0 / 0</td><td>8.424 / 8.194</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=0">baseline.partition-fanout-skew</a></td><td>p1-skew0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=1">baseline.partition-fanout-skew</a></td><td>p1-skew50</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=2">baseline.partition-fanout-skew</a></td><td>p1-skew90</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=3">baseline.partition-fanout-skew</a></td><td>p16-skew0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>11.216 / 12.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=4">baseline.partition-fanout-skew</a></td><td>p16-skew50</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 10.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=5">baseline.partition-fanout-skew</a></td><td>p16-skew90</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=6">baseline.partition-fanout-skew</a></td><td>p6-skew0</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 9.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=7">baseline.partition-fanout-skew</a></td><td>p6-skew50</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.426 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=8">baseline.partition-fanout-skew</a></td><td>p6-skew90</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 8.000</td><td>checked</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=9">baseline.partition-fanout-skew</a></td><td>p1-skew0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=10">baseline.partition-fanout-skew</a></td><td>p1-skew50</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=11">baseline.partition-fanout-skew</a></td><td>p1-skew90</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.224 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=12">baseline.partition-fanout-skew</a></td><td>p16-skew0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>11.216 / 10.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=13">baseline.partition-fanout-skew</a></td><td>p16-skew50</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=14">baseline.partition-fanout-skew</a></td><td>p16-skew90</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--1.html#pair=15">baseline.partition-fanout-skew</a></td><td>p6-skew0</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>8.425 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--2.html#pair=0">baseline.partition-fanout-skew</a></td><td>p6-skew50</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.426 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="baseline.partition-fanout-skew--test--2.html#pair=1">baseline.partition-fanout-skew</a></td><td>p6-skew90</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>9.425 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=0">hard.bootstrap-down-at-start</a></td><td>b1-first</td><td>test</td><td>common</td><td>176 / 200</td><td>24 / 0</td><td>5,004.080 / 5,001.000</td><td>checked</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=1">hard.bootstrap-down-at-start</a></td><td>b2-first</td><td>test</td><td>common</td><td>190 / 200</td><td>10 / 0</td><td>5,059.080 / 5,012.000</td><td>checked</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=2">hard.bootstrap-down-at-start</a></td><td>single</td><td>test</td><td>common</td><td>100 / 0</td><td>100 / 100</td><td>9.212 / —</td><td>checked</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=3">hard.bootstrap-down-at-start</a></td><td>b1-first</td><td>test</td><td>original</td><td>176 / 200</td><td>24 / 0</td><td>5,004.080 / 5,001.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=4">hard.bootstrap-down-at-start</a></td><td>b2-first</td><td>test</td><td>original</td><td>190 / 200</td><td>10 / 0</td><td>5,059.080 / 5,012.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.bootstrap-down-at-start--test--1.html#pair=5">hard.bootstrap-down-at-start</a></td><td>single</td><td>test</td><td>original</td><td>100 / 0</td><td>100 / 100</td><td>9.212 / —</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.close-during-outage--test--1.html#pair=0">hard.close-during-outage</a></td><td>deadline15s</td><td>test</td><td>common</td><td>56 / 56</td><td>0 / 0</td><td>10,086.141 / 10,012.100</td><td>checked</td></tr><tr><td><a href="hard.close-during-outage--test--1.html#pair=1">hard.close-during-outage</a></td><td>deadline2s</td><td>test</td><td>common</td><td>40 / 40</td><td>0 / 0</td><td>4.212 / 15.000</td><td>checked</td></tr><tr><td><a href="hard.close-during-outage--test--1.html#pair=2">hard.close-during-outage</a></td><td>deadline15s</td><td>test</td><td>original</td><td>56 / 56</td><td>0 / 0</td><td>10,086.141 / 10,012.100</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.close-during-outage--test--1.html#pair=3">hard.close-during-outage</a></td><td>deadline2s</td><td>test</td><td>original</td><td>40 / 40</td><td>0 / 0</td><td>4.212 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=0">hard.crash-restart-closed</a></td><td>k16-slow0</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,012.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=1">hard.crash-restart-closed</a></td><td>k16-slow1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,629.354 / 3,083.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=2">hard.crash-restart-closed</a></td><td>k64-slow0</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,012.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=3">hard.crash-restart-closed</a></td><td>k64-slow1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,629.354 / 3,083.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=4">hard.crash-restart-closed</a></td><td>k16-slow0</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,005.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=5">hard.crash-restart-closed</a></td><td>k16-slow1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,629.354 / 3,014.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=6">hard.crash-restart-closed</a></td><td>k64-slow0</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,005.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-closed--test--1.html#pair=7">hard.crash-restart-closed</a></td><td>k64-slow1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,629.354 / 3,014.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=0">hard.crash-restart-open</a></td><td>rate1000</td><td>test</td><td>common</td><td>280 / 48</td><td>0 / 232</td><td>3,032.116 / 3,016.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=1">hard.crash-restart-open</a></td><td>rate16000</td><td>test</td><td>common</td><td>280 / 48</td><td>0 / 232</td><td>3,032.116 / 3,016.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=2">hard.crash-restart-open</a></td><td>rate4000</td><td>test</td><td>common</td><td>280 / 48</td><td>0 / 232</td><td>3,032.116 / 3,016.500</td><td>checked</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=3">hard.crash-restart-open</a></td><td>rate1000</td><td>test</td><td>original</td><td>280 / 40</td><td>0 / 240</td><td>3,032.116 / 3,006.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=4">hard.crash-restart-open</a></td><td>rate16000</td><td>test</td><td>original</td><td>280 / 40</td><td>0 / 240</td><td>3,032.116 / 3,006.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.crash-restart-open--test--1.html#pair=5">hard.crash-restart-open</a></td><td>rate4000</td><td>test</td><td>original</td><td>280 / 40</td><td>0 / 240</td><td>3,032.116 / 3,006.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=0">hard.flapping-broker</a></td><td>duty10-slow0</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>161.020 / 110.000</td><td>checked</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=1">hard.flapping-broker</a></td><td>duty10-slow1</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>318.424 / 191.000</td><td>checked</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=2">hard.flapping-broker</a></td><td>duty50-slow0</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>558.616 / 509.000</td><td>checked</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=3">hard.flapping-broker</a></td><td>duty50-slow1</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>757.424 / 669.000</td><td>checked</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=4">hard.flapping-broker</a></td><td>duty10-slow0</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>161.020 / 112.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=5">hard.flapping-broker</a></td><td>duty10-slow1</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>318.424 / 187.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=6">hard.flapping-broker</a></td><td>duty50-slow0</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>558.616 / 507.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.flapping-broker--test--1.html#pair=7">hard.flapping-broker</a></td><td>duty50-slow1</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>757.424 / 687.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=0">hard.leader-failover-during-outage</a></td><td>move10s-metadata1000ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>10,068.716 / 10,049.500</td><td>checked</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=1">hard.leader-failover-during-outage</a></td><td>move10s-metadata20ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>10,016.715 / 10,032.500</td><td>checked</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=2">hard.leader-failover-during-outage</a></td><td>move1s-metadata1000ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>1,028.715 / 1,026.500</td><td>checked</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=3">hard.leader-failover-during-outage</a></td><td>move1s-metadata20ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>1,010.715 / 1,020.500</td><td>checked</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=4">hard.leader-failover-during-outage</a></td><td>move10s-metadata1000ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>10,068.716 / 10,044.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=5">hard.leader-failover-during-outage</a></td><td>move10s-metadata20ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>10,016.715 / 10,030.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=6">hard.leader-failover-during-outage</a></td><td>move1s-metadata1000ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>1,028.715 / 1,029.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.leader-failover-during-outage--test--1.html#pair=7">hard.leader-failover-during-outage</a></td><td>move1s-metadata20ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>1,010.715 / 1,022.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=0">hard.partition-admission-isolation</a></td><td>independent-rate1000-pressure</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=1">hard.partition-admission-isolation</a></td><td>independent-rate1000-shared</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=2">hard.partition-admission-isolation</a></td><td>independent-rate16000-pressure</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=3">hard.partition-admission-isolation</a></td><td>independent-rate16000-shared</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=4">hard.partition-admission-isolation</a></td><td>independent-rate4000-pressure</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=5">hard.partition-admission-isolation</a></td><td>independent-rate4000-shared</td><td>test</td><td>common</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,997.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=6">hard.partition-admission-isolation</a></td><td>independent-rate1000-pressure</td><td>test</td><td>original</td><td>3,396 / 2,414</td><td>6 / 988</td><td>2,937.696 / 7.385</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=7">hard.partition-admission-isolation</a></td><td>independent-rate1000-shared</td><td>test</td><td>original</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,996.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=8">hard.partition-admission-isolation</a></td><td>independent-rate16000-pressure</td><td>test</td><td>original</td><td>3,396 / 2,414</td><td>6 / 988</td><td>2,937.696 / 7.385</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=9">hard.partition-admission-isolation</a></td><td>independent-rate16000-shared</td><td>test</td><td>original</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,996.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=10">hard.partition-admission-isolation</a></td><td>independent-rate4000-pressure</td><td>test</td><td>original</td><td>3,396 / 2,414</td><td>6 / 988</td><td>2,937.696 / 7.385</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.partition-admission-isolation--test--1.html#pair=11">hard.partition-admission-isolation</a></td><td>independent-rate4000-shared</td><td>test</td><td>original</td><td>3,396 / 482</td><td>6 / 2,920</td><td>2,937.696 / 2,996.238</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.rolling-restart--test--1.html#pair=0">hard.rolling-restart</a></td><td>overlap0s</td><td>test</td><td>common</td><td>240 / 240</td><td>0 / 0</td><td>3,102.520 / 3,017.500</td><td>checked</td></tr><tr><td><a href="hard.rolling-restart--test--1.html#pair=1">hard.rolling-restart</a></td><td>overlap1s</td><td>test</td><td>common</td><td>240 / 240</td><td>0 / 0</td><td>3,094.520 / 3,018.500</td><td>checked</td></tr><tr><td><a href="hard.rolling-restart--test--1.html#pair=2">hard.rolling-restart</a></td><td>overlap0s</td><td>test</td><td>original</td><td>240 / 240</td><td>0 / 0</td><td>3,102.520 / 3,018.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.rolling-restart--test--1.html#pair=3">hard.rolling-restart</a></td><td>overlap1s</td><td>test</td><td>original</td><td>240 / 240</td><td>0 / 0</td><td>3,094.520 / 3,016.500</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=0">hard.short-vs-long-outage</a></td><td>outage2s-request2000ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>2,096.339 / 2,031.100</td><td>checked</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=1">hard.short-vs-long-outage</a></td><td>outage2s-request200ms</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>2,096.339 / 2,031.100</td><td>checked</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=2">hard.short-vs-long-outage</a></td><td>outage8s-request2000ms</td><td>test</td><td>common</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 15.000</td><td>checked</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=3">hard.short-vs-long-outage</a></td><td>outage8s-request200ms</td><td>test</td><td>common</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 15.000</td><td>checked</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=4">hard.short-vs-long-outage</a></td><td>outage2s-request2000ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>2,096.339 / 2,023.100</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=5">hard.short-vs-long-outage</a></td><td>outage2s-request200ms</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>2,096.339 / 2,023.100</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=6">hard.short-vs-long-outage</a></td><td>outage8s-request2000ms</td><td>test</td><td>original</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="hard.short-vs-long-outage--test--1.html#pair=7">hard.short-vs-long-outage</a></td><td>outage8s-request200ms</td><td>test</td><td>original</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=0">resources.delivery-timeout-tuning</a></td><td>deadline2s</td><td>test</td><td>common</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 15.000</td><td>checked</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=1">resources.delivery-timeout-tuning</a></td><td>deadline30s</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>4,088.339 / 4,027.100</td><td>checked</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=2">resources.delivery-timeout-tuning</a></td><td>deadline6s</td><td>test</td><td>common</td><td>112 / 112</td><td>0 / 0</td><td>4,088.339 / 4,027.100</td><td>checked</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=3">resources.delivery-timeout-tuning</a></td><td>deadline2s</td><td>test</td><td>original</td><td>64 / 64</td><td>0 / 0</td><td>6.218 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=4">resources.delivery-timeout-tuning</a></td><td>deadline30s</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>4,088.339 / 4,038.100</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.delivery-timeout-tuning--test--1.html#pair=5">resources.delivery-timeout-tuning</a></td><td>deadline6s</td><td>test</td><td>original</td><td>112 / 112</td><td>0 / 0</td><td>4,088.339 / 4,038.100</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.memory-bounded-overload--test--1.html#pair=0">resources.memory-bounded-overload</a></td><td>value2048</td><td>test</td><td>common</td><td>102 / 298</td><td>402 / 206</td><td>67.992 / 32.344</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.memory-bounded-overload--test--1.html#pair=1">resources.memory-bounded-overload</a></td><td>value512</td><td>test</td><td>common</td><td>504 / 352</td><td>0 / 152</td><td>51.324 / 28.156</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.memory-bounded-overload--test--1.html#pair=2">resources.memory-bounded-overload</a></td><td>value2048</td><td>test</td><td>original</td><td>102 / 135</td><td>402 / 369</td><td>67.992 / 246.312</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.memory-bounded-overload--test--1.html#pair=3">resources.memory-bounded-overload</a></td><td>value512</td><td>test</td><td>original</td><td>504 / 280</td><td>0 / 224</td><td>51.324 / 440.250</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.stop-polling-backpressure--test--1.html#pair=0">resources.stop-polling-backpressure</a></td><td>events1024</td><td>test</td><td>common</td><td>496 / 176</td><td>0 / 320</td><td>1,984.489 / 1,996.094</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.stop-polling-backpressure--test--1.html#pair=1">resources.stop-polling-backpressure</a></td><td>events64</td><td>test</td><td>common</td><td>496 / 64</td><td>0 / 432</td><td>1,984.489 / 2,000.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.stop-polling-backpressure--test--1.html#pair=2">resources.stop-polling-backpressure</a></td><td>events1024</td><td>test</td><td>original</td><td>496 / 176</td><td>0 / 320</td><td>1,984.489 / 1,996.094</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.stop-polling-backpressure--test--1.html#pair=3">resources.stop-polling-backpressure</a></td><td>events64</td><td>test</td><td>original</td><td>496 / 64</td><td>0 / 432</td><td>1,984.489 / 2,000.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=0">resources.wire-window-vs-latency</a></td><td>window1024k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 207.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=1">resources.wire-window-vs-latency</a></td><td>window256k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 207.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=2">resources.wire-window-vs-latency</a></td><td>window64k</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 207.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=3">resources.wire-window-vs-latency</a></td><td>window1024k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 206.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=4">resources.wire-window-vs-latency</a></td><td>window256k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 206.000</td><td>checked; semantic limits</td></tr><tr><td><a href="resources.wire-window-vs-latency--test--1.html#pair=5">resources.wire-window-vs-latency</a></td><td>window64k</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>127.040 / 206.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=0">soft.blackhole-vs-failfast</a></td><td>blackhole-request1000ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,004.512 / 2,994.000</td><td>checked</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=1">soft.blackhole-vs-failfast</a></td><td>blackhole-request200ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,004.512 / 2,994.000</td><td>checked</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=2">soft.blackhole-vs-failfast</a></td><td>failfast-request1000ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,012.500</td><td>checked</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=3">soft.blackhole-vs-failfast</a></td><td>failfast-request200ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,012.500</td><td>checked</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=4">soft.blackhole-vs-failfast</a></td><td>blackhole-request1000ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,004.512 / 2,994.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=5">soft.blackhole-vs-failfast</a></td><td>blackhole-request200ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,004.512 / 2,994.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=6">soft.blackhole-vs-failfast</a></td><td>failfast-request1000ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,005.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.blackhole-vs-failfast--test--1.html#pair=7">soft.blackhole-vs-failfast</a></td><td>failfast-request200ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>3,017.119 / 3,005.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.degrading-broker-ramp--test--1.html#pair=0">soft.degrading-broker-ramp</a></td><td>request1000ms</td><td>test</td><td>common</td><td>160 / 160</td><td>0 / 0</td><td>1,019.212 / 787.000</td><td>checked</td></tr><tr><td><a href="soft.degrading-broker-ramp--test--1.html#pair=1">soft.degrading-broker-ramp</a></td><td>request200ms</td><td>test</td><td>common</td><td>160 / 160</td><td>0 / 0</td><td>20,222.235 / 20,361.000</td><td>checked</td></tr><tr><td><a href="soft.degrading-broker-ramp--test--1.html#pair=2">soft.degrading-broker-ramp</a></td><td>request1000ms</td><td>test</td><td>original</td><td>160 / 160</td><td>0 / 0</td><td>1,019.212 / 787.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.degrading-broker-ramp--test--1.html#pair=3">soft.degrading-broker-ramp</a></td><td>request200ms</td><td>test</td><td>original</td><td>160 / 160</td><td>0 / 0</td><td>20,222.235 / 20,070.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.disconnect-storm--test--1.html#pair=0">soft.disconnect-storm</a></td><td>i1</td><td>test</td><td>common</td><td>368 / 368</td><td>0 / 0</td><td>80.529 / 127.000</td><td>checked</td></tr><tr><td><a href="soft.disconnect-storm--test--1.html#pair=1">soft.disconnect-storm</a></td><td>i5</td><td>test</td><td>common</td><td>368 / 368</td><td>0 / 0</td><td>78.712 / 130.000</td><td>checked</td></tr><tr><td><a href="soft.disconnect-storm--test--1.html#pair=2">soft.disconnect-storm</a></td><td>i1</td><td>test</td><td>original</td><td>368 / 368</td><td>0 / 0</td><td>80.529 / 121.375</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.disconnect-storm--test--1.html#pair=3">soft.disconnect-storm</a></td><td>i5</td><td>test</td><td>original</td><td>368 / 368</td><td>0 / 0</td><td>78.712 / 123.375</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=0">soft.high-jitter</a></td><td>jitter0ms-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>35.001 / 43.000</td><td>checked</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=1">soft.high-jitter</a></td><td>jitter0ms-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>32.002 / 40.000</td><td>checked</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=2">soft.high-jitter</a></td><td>jitter5ms-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>83.674 / 85.000</td><td>checked</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=3">soft.high-jitter</a></td><td>jitter5ms-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>75.396 / 85.000</td><td>checked</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=4">soft.high-jitter</a></td><td>jitter0ms-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>35.001 / 36.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=5">soft.high-jitter</a></td><td>jitter0ms-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>32.002 / 36.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=6">soft.high-jitter</a></td><td>jitter5ms-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>83.674 / 89.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.high-jitter--test--1.html#pair=7">soft.high-jitter</a></td><td>jitter5ms-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>75.396 / 89.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.metadata-loss-during-move--test--1.html#pair=0">soft.metadata-loss-during-move</a></td><td>metadata1000ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>27.120 / 16.500</td><td>checked</td></tr><tr><td><a href="soft.metadata-loss-during-move--test--1.html#pair=1">soft.metadata-loss-during-move</a></td><td>metadata20ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>29.523 / 16.500</td><td>checked</td></tr><tr><td><a href="soft.metadata-loss-during-move--test--1.html#pair=2">soft.metadata-loss-during-move</a></td><td>metadata1000ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>6.811 / 18.500</td><td>exposure gap; semantic limits</td></tr><tr><td><a href="soft.metadata-loss-during-move--test--1.html#pair=3">soft.metadata-loss-during-move</a></td><td>metadata20ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>6.814 / 17.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=0">soft.one-way-loss-responses</a></td><td>outage3000ms-i1</td><td>test</td><td>common</td><td>104 / 104</td><td>0 / 0</td><td>3,019.520 / 3,032.500</td><td>checked</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=1">soft.one-way-loss-responses</a></td><td>outage3000ms-i5</td><td>test</td><td>common</td><td>104 / 104</td><td>0 / 0</td><td>3,047.930 / 3,015.500</td><td>checked</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=2">soft.one-way-loss-responses</a></td><td>outage300ms-i1</td><td>test</td><td>common</td><td>104 / 104</td><td>0 / 0</td><td>306.118 / 320.500</td><td>checked</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=3">soft.one-way-loss-responses</a></td><td>outage300ms-i5</td><td>test</td><td>common</td><td>104 / 104</td><td>0 / 0</td><td>306.118 / 315.500</td><td>checked</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=4">soft.one-way-loss-responses</a></td><td>outage3000ms-i1</td><td>test</td><td>original</td><td>104 / 104</td><td>0 / 0</td><td>3,019.520 / 3,025.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=5">soft.one-way-loss-responses</a></td><td>outage3000ms-i5</td><td>test</td><td>original</td><td>104 / 104</td><td>0 / 0</td><td>3,047.930 / 3,024.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=6">soft.one-way-loss-responses</a></td><td>outage300ms-i1</td><td>test</td><td>original</td><td>104 / 104</td><td>0 / 0</td><td>306.118 / 320.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.one-way-loss-responses--test--1.html#pair=7">soft.one-way-loss-responses</a></td><td>outage300ms-i5</td><td>test</td><td>original</td><td>104 / 104</td><td>0 / 0</td><td>306.118 / 317.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=0">soft.retriable-error-storm</a></td><td>error19-slow0</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>2,041.122 / 2,036.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=1">soft.retriable-error-storm</a></td><td>error19-slow1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>2,229.930 / 2,301.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=2">soft.retriable-error-storm</a></td><td>error6-slow0</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>6.811 / 20.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=3">soft.retriable-error-storm</a></td><td>error6-slow1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>102.332 / 140.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=4">soft.retriable-error-storm</a></td><td>error7-slow0</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>2,041.122 / 2,036.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=5">soft.retriable-error-storm</a></td><td>error7-slow1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>2,229.930 / 2,301.500</td><td>checked</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=6">soft.retriable-error-storm</a></td><td>error19-slow0</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>2,041.122 / 2,148.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=7">soft.retriable-error-storm</a></td><td>error19-slow1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>2,229.930 / 2,814.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=8">soft.retriable-error-storm</a></td><td>error6-slow0</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>6.811 / 22.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=9">soft.retriable-error-storm</a></td><td>error6-slow1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>102.332 / 152.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=10">soft.retriable-error-storm</a></td><td>error7-slow0</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>2,041.122 / 2,148.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.retriable-error-storm--test--1.html#pair=11">soft.retriable-error-storm</a></td><td>error7-slow1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>2,229.930 / 2,814.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=0">soft.slow-broker-window</a></td><td>lanes1-i1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>746.520 / 444.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=1">soft.slow-broker-window</a></td><td>lanes1-i5</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>959.541 / 826.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=2">soft.slow-broker-window</a></td><td>lanes4-i1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>746.520 / 444.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=3">soft.slow-broker-window</a></td><td>lanes4-i5</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>959.541 / 826.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=4">soft.slow-broker-window</a></td><td>lanes1-i1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>746.520 / 444.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=5">soft.slow-broker-window</a></td><td>lanes1-i5</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>959.541 / 869.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=6">soft.slow-broker-window</a></td><td>lanes4-i1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>746.520 / 444.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.slow-broker-window--test--1.html#pair=7">soft.slow-broker-window</a></td><td>lanes4-i5</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>959.541 / 869.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.slow-setup--test--1.html#pair=0">soft.slow-setup</a></td><td>request2000ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>1,837.523 / 1,838.500</td><td>checked</td></tr><tr><td><a href="soft.slow-setup--test--1.html#pair=1">soft.slow-setup</a></td><td>request200ms</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>5,191.408 / 5,164.500</td><td>checked</td></tr><tr><td><a href="soft.slow-setup--test--1.html#pair=2">soft.slow-setup</a></td><td>request2000ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>1,837.523 / 1,827.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.slow-setup--test--1.html#pair=3">soft.slow-setup</a></td><td>request200ms</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>5,191.408 / 5,184.500</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=0">soft.sustained-random-loss</a></td><td>loss1-slow0</td><td>test</td><td>common</td><td>335 / 336</td><td>1 / 0</td><td>9.212 / 7.000</td><td>checked</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=1">soft.sustained-random-loss</a></td><td>loss1-slow1</td><td>test</td><td>common</td><td>333 / 336</td><td>3 / 0</td><td>9.212 / 8.000</td><td>checked</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=2">soft.sustained-random-loss</a></td><td>loss5-slow0</td><td>test</td><td>common</td><td>335 / 336</td><td>1 / 0</td><td>20.818 / 24.000</td><td>checked</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=3">soft.sustained-random-loss</a></td><td>loss5-slow1</td><td>test</td><td>common</td><td>333 / 336</td><td>3 / 0</td><td>115.366 / 175.250</td><td>checked</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=4">soft.sustained-random-loss</a></td><td>loss1-slow0</td><td>test</td><td>original</td><td>321 / 336</td><td>1 / 0</td><td>29,064.680 / 7.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=5">soft.sustained-random-loss</a></td><td>loss1-slow1</td><td>test</td><td>original</td><td>321 / 336</td><td>3 / 0</td><td>29,064.872 / 7.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=6">soft.sustained-random-loss</a></td><td>loss5-slow0</td><td>test</td><td>original</td><td>315 / 336</td><td>1 / 0</td><td>29,161.689 / 148.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.sustained-random-loss--test--1.html#pair=7">soft.sustained-random-loss</a></td><td>loss5-slow1</td><td>test</td><td>original</td><td>322 / 336</td><td>3 / 0</td><td>29,161.881 / 270.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.throttle-window--test--1.html#pair=0">soft.throttle-window</a></td><td>i1</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>1,995.716 / 994.000</td><td>checked</td></tr><tr><td><a href="soft.throttle-window--test--1.html#pair=1">soft.throttle-window</a></td><td>i5</td><td>test</td><td>common</td><td>96 / 96</td><td>0 / 0</td><td>503.540 / 494.000</td><td>checked</td></tr><tr><td><a href="soft.throttle-window--test--1.html#pair=2">soft.throttle-window</a></td><td>i1</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>1,995.716 / 994.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.throttle-window--test--1.html#pair=3">soft.throttle-window</a></td><td>i5</td><td>test</td><td>original</td><td>96 / 96</td><td>0 / 0</td><td>503.540 / 494.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=0">soft.tiny-chunk-transport</a></td><td>window1024k-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>17.088 / 19.000</td><td>checked</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=1">soft.tiny-chunk-transport</a></td><td>window1024k-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>15.074 / 18.000</td><td>checked</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=2">soft.tiny-chunk-transport</a></td><td>window64k-i1</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>17.088 / 19.000</td><td>checked</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=3">soft.tiny-chunk-transport</a></td><td>window64k-i5</td><td>test</td><td>common</td><td>128 / 128</td><td>0 / 0</td><td>15.074 / 18.000</td><td>checked</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=4">soft.tiny-chunk-transport</a></td><td>window1024k-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>17.088 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=5">soft.tiny-chunk-transport</a></td><td>window1024k-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>15.074 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=6">soft.tiny-chunk-transport</a></td><td>window64k-i1</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>17.088 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="soft.tiny-chunk-transport--test--1.html#pair=7">soft.tiny-chunk-transport</a></td><td>window64k-i5</td><td>test</td><td>original</td><td>128 / 128</td><td>0 / 0</td><td>15.074 / 17.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.delete-recreate--test--1.html#pair=0">topology.delete-recreate</a></td><td>reopen0</td><td>test</td><td>common</td><td>180 / 80</td><td>0 / 97</td><td>15.404 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.delete-recreate--test--1.html#pair=1">topology.delete-recreate</a></td><td>reopen1</td><td>test</td><td>common</td><td>180 / 180</td><td>0 / 0</td><td>6.808 / 9.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.delete-recreate--test--1.html#pair=2">topology.delete-recreate</a></td><td>reopen0</td><td>test</td><td>original</td><td>180 / 80</td><td>0 / 97</td><td>15.404 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.delete-recreate--test--1.html#pair=3">topology.delete-recreate</a></td><td>reopen1</td><td>test</td><td>original</td><td>180 / 180</td><td>0 / 0</td><td>6.808 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.leader-rebalance-churn--test--1.html#pair=0">topology.leader-rebalance-churn</a></td><td>i1</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>9.212 / 30.000</td><td>checked</td></tr><tr><td><a href="topology.leader-rebalance-churn--test--1.html#pair=1">topology.leader-rebalance-churn</a></td><td>i5</td><td>test</td><td>common</td><td>272 / 272</td><td>0 / 0</td><td>10.616 / 29.000</td><td>checked</td></tr><tr><td><a href="topology.leader-rebalance-churn--test--1.html#pair=2">topology.leader-rebalance-churn</a></td><td>i1</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>9.212 / 30.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.leader-rebalance-churn--test--1.html#pair=3">topology.leader-rebalance-churn</a></td><td>i5</td><td>test</td><td>original</td><td>272 / 272</td><td>0 / 0</td><td>10.616 / 30.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.multi-topic-isolation--test--1.html#pair=0">topology.multi-topic-isolation</a></td><td>lanes1</td><td>test</td><td>common</td><td>256 / 256</td><td>0 / 0</td><td>1,020.416 / 817.000</td><td>checked</td></tr><tr><td><a href="topology.multi-topic-isolation--test--1.html#pair=1">topology.multi-topic-isolation</a></td><td>lanes4</td><td>test</td><td>common</td><td>256 / 256</td><td>0 / 0</td><td>1,020.416 / 817.000</td><td>checked</td></tr><tr><td><a href="topology.multi-topic-isolation--test--1.html#pair=2">topology.multi-topic-isolation</a></td><td>lanes1</td><td>test</td><td>original</td><td>256 / 256</td><td>0 / 0</td><td>1,020.416 / 817.000</td><td>checked</td></tr><tr><td><a href="topology.multi-topic-isolation--test--1.html#pair=3">topology.multi-topic-isolation</a></td><td>lanes4</td><td>test</td><td>original</td><td>256 / 256</td><td>0 / 0</td><td>1,020.416 / 817.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.partition-expansion--test--1.html#pair=0">topology.partition-expansion</a></td><td>metadata1000ms</td><td>test</td><td>common</td><td>208 / 208</td><td>0 / 0</td><td>6.616 / 9.000</td><td>checked</td></tr><tr><td><a href="topology.partition-expansion--test--1.html#pair=1">topology.partition-expansion</a></td><td>metadata20ms</td><td>test</td><td>common</td><td>208 / 208</td><td>0 / 0</td><td>6.808 / 9.000</td><td>checked</td></tr><tr><td><a href="topology.partition-expansion--test--1.html#pair=2">topology.partition-expansion</a></td><td>metadata1000ms</td><td>test</td><td>original</td><td>208 / 208</td><td>0 / 0</td><td>6.616 / 8.000</td><td>checked; semantic limits</td></tr><tr><td><a href="topology.partition-expansion--test--1.html#pair=3">topology.partition-expansion</a></td><td>metadata20ms</td><td>test</td><td>original</td><td>208 / 208</td><td>0 / 0</td><td>6.808 / 8.000</td><td>checked; semantic limits</td></tr></tbody></table></div></main></html>

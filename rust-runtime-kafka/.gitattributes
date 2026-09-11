@@ -8,3 +8,6 @@ schemas/PROVENANCE.lock -text
 # Preserve canonical jextract output and the Windows wrapper verbatim.
 kafka/kr-kafka-java/src/main/java/io/krkafka/ffi/*.java -text -whitespace
 kafka/kr-kafka-java/gradlew.bat -text whitespace=cr-at-eol
+
+# Preserve self-contained generated report pages exactly as exported.
+reports/**/*.html -text -whitespace linguist-generated=true
