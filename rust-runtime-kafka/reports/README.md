@@ -4,11 +4,12 @@ Open [index.html](index.html) in a browser from a local checkout. These HTML
 exports include their scripts, styles and data, and work without a server.
 GitHub displays HTML source; download or check out the files to use the viewers.
 
-The snapshot contains the native Full catalogue (146 runs), the classic
-Java/native Test catalogue (292 matched pairs), and seed-0 admission previews
-(24 runs). Each underlying execution was replay verified. The classic Test
-comparison includes one explicitly flagged fault-exposure gap. Admission pages
-show measurements, not a passed multi-seed policy gate.
+The snapshot contains the native Full catalogue (146 runs), classic Java/native
+Test and Full catalogues (292 matched pairs each), additional-seed classic
+followups, the 324-pair request-grouping dashboard, and seed-0 admission pages.
+[Complete campaign results](CAMPAIGN_RESULTS.md) summarize all 2,440 comparison
+executions and the 204-run admission trial. Individual runs replayed successfully;
+two admission policy gates failed and remain reported as failures.
 
 Raw histories, replay sidecars, machine provenance and ongoing campaign outputs
 remain under ignored `target` directories. They are needed to repeat the
@@ -47,3 +48,9 @@ validating their data, links and metadata.
 | `admission-shared` | `target/experiments/admission-trial/original/shared/seed-0/html` |
 | `admission-pressure` | `target/experiments/admission-trial/original/partition-pressure/seed-0/html` |
 | `admission-skew` | `target/experiments/admission-trial/skew/html` |
+
+The completed Full comparison, additional-seed galleries and request-policy
+dashboard are copied from `target/classic-scenarios/full-review/analysis/viewer`,
+`target/classic-scenarios/followups/seed-{1,7}/viewer`, and
+`target/classic-scenarios/request-policy-viewer`. Compact measured summaries are
+in `summaries`; raw histories and machine provenance remain outside this snapshot.

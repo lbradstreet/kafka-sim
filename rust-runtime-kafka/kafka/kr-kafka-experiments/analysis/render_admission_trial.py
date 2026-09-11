@@ -151,7 +151,7 @@ def main():
     text = ['# Descriptor admission trial', '',
             f'**Healthy admission/progress: {"passed" if isolation else "failed or incomplete"}. '
             f'Skew throughput gate: {"passed" if utilization else "failed"}.** '
-            'The policy remains opt-in; the 75% threshold was not tuned after measurement.', '',
+            'The policy remains opt-in; its 75% shared-descriptor threshold was not tuned after measurement.', '',
             f'{len(rows)} of {len(expected)} planned Full comparisons were analyzed from complete histories, '
             f'with exact saved-checkpoint verification. Crash comparisons cover seeds 0–{args.seeds-1}; '
             'skew comparisons use seed 0. Every run uses fresh manifests and decision tapes.', '',
@@ -216,10 +216,10 @@ def main():
              '- [All paired run measurements](admission-trial-runs.csv)',
              '- [Machine-readable gates](admission-trial-gates.json)',
              '- [Decision-time pressure witnesses](admission-trial-witnesses.json)',
-             '- [Original-source Shared pages](../../target/experiments/admission-trial/original/shared/seed-0/html/index.html)',
-             '- [Original-source pressure pages](../../target/experiments/admission-trial/original/partition-pressure/seed-0/html/index.html)',
-             '- [Independent-source pages](../../target/experiments/admission-trial/independent/seed-0/html/index.html)',
-             '- [Skew and sparse-topology pages](../../target/experiments/admission-trial/skew/html/index.html)', '',
+             '- [Original-source Shared pages](../original/shared/seed-0/html/index.html)',
+             '- [Original-source pressure pages](../original/partition-pressure/seed-0/html/index.html)',
+             '- [Independent-source pages](../independent/seed-0/html/index.html)',
+             '- [Skew and sparse-topology pages](../skew/html/index.html)', '',
              f'The catalogue indexes contain {regression["test"]["runs"]} Test runs and '
              f'{regression["full"]["runs"]} Full runs, with {regression["test"]["original_runs"]} '
              f'and {regression["full"]["original_runs"]} original variants respectively. '

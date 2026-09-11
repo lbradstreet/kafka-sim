@@ -12,7 +12,7 @@ h2 { margin: 0; font-size: 1.15rem; }
 a { color: LinkText; } a:focus-visible { outline: 3px solid Highlight; outline-offset: 4px; }
 </style></head><body><main><h1>Kafka deterministic simulation reports</h1>
 <p class="intro">Freshly generated producer experiments and comparisons. Each page includes its scripts, styles and result data. Open this index in a browser after checking out the repository; no server or raw evidence files are required.</p>
-<p class="intro">The admission galleries show seed 0. Their measurements are previews of the individual workloads, not a verdict on the full multi-seed campaign. Latency statistics describe acknowledged records; compare refused and failed populations alongside them.</p>
+<p class="intro">The admission galleries show seed 0. The full 16-seed campaign passed healthy admission and recovery, while its historical-baseline and skew-throughput gates failed. See the complete campaign results for the measured limits. Latency statistics describe acknowledged records; compare refused and failed populations alongside them.</p>
 <nav aria-label="Report galleries">
 <article><h2><a href="native-full/index.html">Native producer: Full catalogue</a></h2><p>146 replay-verified runs across 37 scenario families.</p></article>
 <article><h2><a href="classic-test/index.html">Classic Java and native: Test catalogue</a></h2><p>292 replay-verified matched pairs across both original and common profiles. Fault-exposure gaps remain visible.</p></article>
@@ -20,4 +20,9 @@ a { color: LinkText; } a:focus-visible { outline: 3px solid Highlight; outline-o
 <article><h2><a href="admission-shared/index.html">Admission: Shared baseline</a></h2><p>Seed 0; the original crash/restart workload at three offered rates.</p></article>
 <article><h2><a href="admission-pressure/index.html">Admission: PartitionPressure</a></h2><p>Seed 0; the original crash/restart workload with partition-pressure admission.</p></article>
 <article><h2><a href="admission-skew/index.html">Admission: skewed demand</a></h2><p>Seed 0; 12 runs comparing Shared and PartitionPressure under concentrated partition demand.</p></article>
+<article><h2><a href="classic-full/index.html">Classic Java and native: Full catalogue</a></h2><p>292 replay-verified matched pairs, plus the detailed admission comparison.</p></article>
+<article><h2><a href="request-policy/index.html">Request grouping: Sealed and BrokerReady</a></h2><p>324 policy pairs covering the Full catalogue and additional-seed followups, with Java references for seed 0.</p></article>
+<article><h2><a href="classic-followup-1/index.html">Classic comparison: seed 1 followups</a></h2><p>Delay-ramp and slow-broker followups under the common profile.</p></article>
+<article><h2><a href="classic-followup-7/index.html">Classic comparison: seed 7 followups</a></h2><p>The same matched followups at an independent seed.</p></article>
+<article><h2><a href="CAMPAIGN_RESULTS.md">Complete campaign results</a></h2><p>Execution totals, measured admission gates, policy controls, and comparison tables.</p></article>
 </nav><p><a href="README.md">Scope and regeneration instructions</a></p></main></body></html>

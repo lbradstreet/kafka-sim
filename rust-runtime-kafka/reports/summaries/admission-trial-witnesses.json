@@ -1,0 +1,1607 @@
+[
+  {
+    "family": "independent",
+    "shape": "independent",
+    "rate": 1000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "independent-rate1000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 312,
+      "0000000000000000c26fd605f43e41df:3": 314
+    },
+    "witnesses": [
+      {
+        "at": 11125748502,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16889",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 11131736526,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16890",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11137724550,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1861",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11137724550,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16891",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11143712574,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1862",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11143712574,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16892",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11149700598,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1863",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11149700598,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16893",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11155688622,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1864",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11155688622,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16894",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11161676646,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1865",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11161676646,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16895",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11167664670,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1866",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11167664670,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16896",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11173652694,
+        "capacity": 512,
+        "class_held": 191,
+        "partition": 0,
+        "record_id": "1867",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11173652694,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 3,
+        "record_id": "16897",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      }
+    ]
+  },
+  {
+    "family": "independent",
+    "shape": "independent",
+    "rate": 16000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "independent-rate16000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 7864,
+      "0000000000000000c26fd605f43e41df:3": 7868
+    },
+    "witnesses": [
+      {
+        "at": 10063742032,
+        "capacity": 512,
+        "class_held": 177,
+        "partition": 0,
+        "record_id": "26841",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10063742032,
+        "capacity": 512,
+        "class_held": 177,
+        "partition": 3,
+        "record_id": "266871",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10064116985,
+        "capacity": 512,
+        "class_held": 177,
+        "partition": 0,
+        "record_id": "26842",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10064116985,
+        "capacity": 512,
+        "class_held": 177,
+        "partition": 3,
+        "record_id": "266872",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 392
+      },
+      {
+        "at": 10064866891,
+        "capacity": 512,
+        "class_held": 178,
+        "partition": 0,
+        "record_id": "26844",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10064866891,
+        "capacity": 512,
+        "class_held": 178,
+        "partition": 3,
+        "record_id": "266874",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10065991751,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 0,
+        "record_id": "26847",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10065991751,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 3,
+        "record_id": "266877",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10066366704,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 0,
+        "record_id": "26848",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10066366704,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 3,
+        "record_id": "266878",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10066741657,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 0,
+        "record_id": "26849",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 392
+      },
+      {
+        "at": 10066741657,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 3,
+        "record_id": "266879",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 394
+      },
+      {
+        "at": 10067116610,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 0,
+        "record_id": "26850",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 396
+      },
+      {
+        "at": 10067116610,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 3,
+        "record_id": "266880",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 398
+      },
+      {
+        "at": 10067491563,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 0,
+        "record_id": "26851",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10067491563,
+        "capacity": 512,
+        "class_held": 180,
+        "partition": 3,
+        "record_id": "266881",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      }
+    ]
+  },
+  {
+    "family": "independent",
+    "shape": "independent",
+    "rate": 4000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "independent-rate4000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 1816,
+      "0000000000000000c26fd605f43e41df:3": 1822
+    },
+    "witnesses": [
+      {
+        "at": 10275862068,
+        "capacity": 512,
+        "class_held": 186,
+        "partition": 0,
+        "record_id": "6855",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10275862068,
+        "capacity": 512,
+        "class_held": 186,
+        "partition": 3,
+        "record_id": "66885",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10278860569,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 0,
+        "record_id": "6857",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10278860569,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66887",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10280359820,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66888",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 10281859070,
+        "capacity": 512,
+        "class_held": 188,
+        "partition": 0,
+        "record_id": "6859",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 387
+      },
+      {
+        "at": 10281859070,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66889",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 389
+      },
+      {
+        "at": 10283358320,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66890",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10284857571,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 0,
+        "record_id": "6861",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10284857571,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66891",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10286356821,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 0,
+        "record_id": "6862",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10286356821,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66892",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10287856071,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 0,
+        "record_id": "6863",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10287856071,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66893",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10289355322,
+        "capacity": 512,
+        "class_held": 189,
+        "partition": 0,
+        "record_id": "6864",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10289355322,
+        "capacity": 512,
+        "class_held": 187,
+        "partition": 3,
+        "record_id": "66894",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      }
+    ]
+  },
+  {
+    "family": "original",
+    "shape": "original",
+    "rate": 1000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "rate1000",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 297,
+      "0000000000000000c26fd605f43e41df:3": 114
+    },
+    "witnesses": [
+      {
+        "at": 11432000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11433",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11444000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11445",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 387
+      },
+      {
+        "at": 11446000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11447",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 11447000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11448",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 11453000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11454",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 11457000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11458",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11458000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11459",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 11460000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11461",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 11467000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11468",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 11484000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11485",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 11489000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11490",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 11493000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11494",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 11496000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11497",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 389
+      },
+      {
+        "at": 11508000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11509",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 392
+      },
+      {
+        "at": 11510000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11511",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 11511000000,
+        "capacity": 512,
+        "class_held": 268,
+        "partition": 0,
+        "record_id": "11512",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 389
+      }
+    ]
+  },
+  {
+    "family": "original",
+    "shape": "original",
+    "rate": 16000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "rate16000",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 8796,
+      "0000000000000000c26fd605f43e41df:3": 3651
+    },
+    "witnesses": [
+      {
+        "at": 10080250000,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161285",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 385
+      },
+      {
+        "at": 10080687500,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161292",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 391
+      },
+      {
+        "at": 10081750000,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161309",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 391
+      },
+      {
+        "at": 10082062500,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161314",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 395
+      },
+      {
+        "at": 10082312500,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161318",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 398
+      },
+      {
+        "at": 10082500000,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161321",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 400
+      },
+      {
+        "at": 10083250000,
+        "capacity": 512,
+        "class_held": 250,
+        "partition": 0,
+        "record_id": "161333",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 387
+      },
+      {
+        "at": 10083812500,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161342",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 387
+      },
+      {
+        "at": 10084062500,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161346",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10084125000,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161347",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10084250000,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161349",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 391
+      },
+      {
+        "at": 10084687500,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161356",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 397
+      },
+      {
+        "at": 10085750000,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161373",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 397
+      },
+      {
+        "at": 10086062500,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161378",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 401
+      },
+      {
+        "at": 10086125000,
+        "capacity": 512,
+        "class_held": 112,
+        "partition": 3,
+        "record_id": "161379",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 401
+      },
+      {
+        "at": 10086312500,
+        "capacity": 512,
+        "class_held": 252,
+        "partition": 0,
+        "record_id": "161382",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 403
+      }
+    ]
+  },
+  {
+    "family": "original",
+    "shape": "original",
+    "rate": 4000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "rate4000",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 1990,
+      "0000000000000000c26fd605f43e41df:3": 821
+    },
+    "witnesses": [
+      {
+        "at": 10343000000,
+        "capacity": 512,
+        "class_held": 259,
+        "partition": 0,
+        "record_id": "41373",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10349500000,
+        "capacity": 512,
+        "class_held": 263,
+        "partition": 0,
+        "record_id": "41399",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10349750000,
+        "capacity": 512,
+        "class_held": 263,
+        "partition": 0,
+        "record_id": "41400",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10351250000,
+        "capacity": 512,
+        "class_held": 263,
+        "partition": 0,
+        "record_id": "41406",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 386
+      },
+      {
+        "at": 10353000000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41413",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 384
+      },
+      {
+        "at": 10354750000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41420",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 387
+      },
+      {
+        "at": 10359000000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41437",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 398
+      },
+      {
+        "at": 10360250000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41442",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10361250000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41446",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 388
+      },
+      {
+        "at": 10362000000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41449",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 390
+      },
+      {
+        "at": 10365000000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41461",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 391
+      },
+      {
+        "at": 10365500000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41463",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 392
+      },
+      {
+        "at": 10365750000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41464",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 392
+      },
+      {
+        "at": 10367250000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41470",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 394
+      },
+      {
+        "at": 10368250000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41474",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 389
+      },
+      {
+        "at": 10368500000,
+        "capacity": 512,
+        "class_held": 265,
+        "partition": 0,
+        "record_id": "41475",
+        "shared_limit": 384,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 389
+      }
+    ]
+  },
+  {
+    "family": "skew",
+    "shape": "hot",
+    "rate": 32000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "hot-rate32000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 200328
+    },
+    "witnesses": [
+      {
+        "at": 201500000,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "57",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201531250,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "58",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201562500,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "59",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201593750,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "60",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201875000,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "69",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201906250,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "70",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201937500,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "71",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201968750,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "72",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202000000,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "73",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202031250,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "74",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202062500,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "75",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202093750,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "76",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202125000,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "77",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202156250,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "78",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202187500,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "79",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202218750,
+        "capacity": 64,
+        "class_held": 48,
+        "partition": 0,
+        "record_id": "80",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      }
+    ]
+  },
+  {
+    "family": "skew",
+    "shape": "hot",
+    "rate": 8000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "hot-rate8000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {},
+    "witnesses": []
+  },
+  {
+    "family": "skew",
+    "shape": "skew90",
+    "rate": 32000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "skew90-rate32000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 197016
+    },
+    "witnesses": [
+      {
+        "at": 201493055,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "52",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201527777,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "53",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201562500,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "54",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201597222,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "55",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 53
+      },
+      {
+        "at": 201631944,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "56",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 53
+      },
+      {
+        "at": 201770833,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "60",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201805555,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "61",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201840277,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "62",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201875000,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "63",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201909722,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "64",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201944444,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "65",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201979166,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "66",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202013888,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "67",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202048611,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "68",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202083333,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "69",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202118055,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "70",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      }
+    ]
+  },
+  {
+    "family": "skew",
+    "shape": "skew90",
+    "rate": 8000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "skew90-rate8000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {},
+    "witnesses": []
+  },
+  {
+    "family": "skew",
+    "shape": "sparse1024",
+    "rate": 32000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "sparse1024-rate32000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {
+      "0000000000000000c26fd605f43e41df:0": 203200
+    },
+    "witnesses": [
+      {
+        "at": 201493055,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "52",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201527777,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "53",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201562500,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "54",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201597222,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "55",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 53
+      },
+      {
+        "at": 201631944,
+        "capacity": 64,
+        "class_held": 43,
+        "partition": 0,
+        "record_id": "56",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 53
+      },
+      {
+        "at": 201770833,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "60",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201805555,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "61",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201840277,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "62",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201875000,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "63",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201909722,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "64",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201944444,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "65",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 201979166,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "66",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202013888,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "67",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202048611,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "68",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202083333,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "69",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      },
+      {
+        "at": 202118055,
+        "capacity": 64,
+        "class_held": 38,
+        "partition": 0,
+        "record_id": "70",
+        "shared_limit": 48,
+        "topic": "0000000000000000c26fd605f43e41df",
+        "total_held": 48
+      }
+    ]
+  },
+  {
+    "family": "skew",
+    "shape": "sparse1024",
+    "rate": 8000,
+    "policy": "PartitionPressure",
+    "seed": 0,
+    "variant": "sparse1024-rate8000-pressure",
+    "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+    "counts": {},
+    "witnesses": []
+  }
+]

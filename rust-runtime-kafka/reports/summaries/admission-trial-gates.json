@@ -1,0 +1,35 @@
+{
+  "schema": "kr-kafka-admission-trial/v1",
+  "source_sha256": "7de7cabd997ba827881d33a5d82c279279d081ca26bef8f83c3493fd6d85a605",
+  "runs": 204,
+  "expected_runs": 204,
+  "seeds": 16,
+  "gates": {
+    "complete_inventory": true,
+    "full_catalogue_regression": true,
+    "frozen_baseline_reproduced": false,
+    "healthy_admission_and_progress": true,
+    "accepted_records_recover": true,
+    "skew_throughput_within_five_percent": false
+  },
+  "frozen_inventory_sha256": "4256b8fd7d3a3e2b7acf107fd15bd71cfb3c305ac05a5fdb52f805c3f0a1a9ab",
+  "catalogue": {
+    "test": {
+      "passed": true,
+      "runs": 146,
+      "original_runs": 128,
+      "missing_original": [],
+      "unexpected_original": [],
+      "index_sha256": "1e3a192e9eb97475468b54f637c7b861e7602e41c54e129eb6a3af546abcabe6"
+    },
+    "full": {
+      "passed": true,
+      "runs": 146,
+      "original_runs": 128,
+      "missing_original": [],
+      "unexpected_original": [],
+      "index_sha256": "93bf3d310c22fa94eb6113765afb1f859b85ae33a364b919b5345f11f4015072"
+    }
+  },
+  "missing_runs": []
+}

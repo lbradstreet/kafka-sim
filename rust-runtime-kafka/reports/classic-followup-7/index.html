@@ -1,0 +1,798 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Java vs native producer comparisons</title><style>:root {
+  color-scheme: light dark;
+  --font-size-base: 16px;
+  --background: light-dark(oklch(0.985 0.004 255), oklch(0.17 0.012 255));
+  --foreground: light-dark(oklch(0.22 0.018 255), oklch(0.92 0.008 255));
+  --muted: light-dark(oklch(0.94 0.008 255), oklch(0.24 0.012 255));
+  --muted-foreground: light-dark(oklch(0.44 0.018 255), oklch(0.72 0.014 255));
+  --border: light-dark(oklch(0.82 0.012 255), oklch(0.37 0.016 255));
+  --selected: light-dark(oklch(0.48 0.15 250), oklch(0.75 0.13 245));
+  --accepted: light-dark(oklch(0.52 0.14 250), oklch(0.73 0.13 245));
+  --durable: light-dark(oklch(0.48 0.13 155), oklch(0.75 0.12 155));
+  --rejected: light-dark(oklch(0.57 0.16 75), oklch(0.78 0.13 75));
+  --uncertain: light-dark(oklch(0.55 0.15 95), oklch(0.82 0.13 95));
+  --unknown: light-dark(oklch(0.48 0.04 220), oklch(0.75 0.04 220));
+  --destructive: light-dark(oklch(0.52 0.18 25), oklch(0.72 0.17 25));
+  --recovered: light-dark(oklch(0.5 0.14 300), oklch(0.76 0.13 300));
+  --selection-fill: color-mix(in oklch, var(--selected) 12%, transparent);
+  --code-background: light-dark(oklch(0.965 0.008 255), oklch(0.135 0.015 255));
+  --syntax-key: light-dark(oklch(0.43 0.16 250), oklch(0.78 0.13 245));
+  --syntax-string: light-dark(oklch(0.4 0.12 155), oklch(0.79 0.11 155));
+  --syntax-number: light-dark(oklch(0.46 0.17 305), oklch(0.79 0.13 305));
+  --syntax-boolean: light-dark(oklch(0.46 0.14 65), oklch(0.83 0.13 75));
+  --syntax-null: light-dark(oklch(0.5 0.16 25), oklch(0.79 0.14 25));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--font-size-base);
+}
+
+main {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  padding: 1.25rem clamp(0.75rem, 3vw, 2rem) 2.5rem;
+}
+
+h1,
+h2,
+p,
+dl {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.25rem;
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-weight: 500;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.eyebrow,
+.caption,
+.meta-line,
+.axis-note,
+.detail-meta {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.eyebrow {
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meta-line {
+  margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.runtime-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0.65rem 0 0;
+  padding: 0;
+}
+
+.runtime-line div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.runtime-line dt {
+  color: var(--muted-foreground);
+}
+
+.runtime-line dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trace-loader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.trace-loader label {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+}
+
+.trace-loader input[type="file"] {
+  min-width: min(100%, 17rem);
+  max-width: 100%;
+  font-size: 0.82rem;
+}
+
+.trace-source {
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.trace-error {
+  margin: 0.45rem 0 0;
+  color: var(--destructive);
+  font-size: 0.82rem;
+}
+
+section,
+.selected-detail {
+  margin-top: 1.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-heading p,
+.caption {
+  margin-bottom: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.35rem 0 0.65rem;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.swatch {
+  width: 0.8rem;
+  height: 0.18rem;
+  background: currentColor;
+}
+
+.swatch.accepted,
+.legend-item.accepted {
+  color: var(--accepted);
+}
+
+.swatch.durable,
+.legend-item.durable {
+  color: var(--durable);
+}
+
+.swatch.rejected,
+.legend-item.rejected {
+  color: var(--rejected);
+}
+
+.swatch.uncertain,
+.legend-item.uncertain {
+  color: var(--uncertain);
+}
+
+.swatch.unknown,
+.legend-item.unknown {
+  color: var(--unknown);
+}
+
+.swatch.crash,
+.legend-item.crash {
+  color: var(--destructive);
+}
+
+.swatch.recovered,
+.legend-item.recovered {
+  color: var(--recovered);
+}
+
+.dash {
+  background: repeating-linear-gradient(90deg, currentColor 0 5px, transparent
+    5px 8px);
+}
+
+svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  color: var(--foreground);
+  overflow: visible;
+}
+
+.chart-grid,
+.chart-axis,
+.lane-line,
+.strip-outline {
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-grid {
+  opacity: 0.62;
+}
+
+.chart-label,
+.axis-label {
+  fill: var(--muted-foreground);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.lane-label {
+  fill: var(--foreground);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.trace-step {
+  cursor: pointer;
+}
+
+.trace-step:focus {
+  outline: none;
+}
+
+.trace-step .duration-line {
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.trace-step.success .duration-line,
+.trace-step.success .completion-mark {
+  color: var(--accepted);
+  fill: var(--accepted);
+  stroke: var(--accepted);
+}
+
+.trace-step.rejected .duration-line,
+.trace-step.rejected .completion-mark {
+  color: var(--rejected);
+  fill: var(--rejected);
+  stroke: var(--rejected);
+}
+
+.trace-step.uncertain .duration-line,
+.trace-step.uncertain .completion-mark {
+  color: var(--uncertain);
+  fill: var(--uncertain);
+  stroke: var(--uncertain);
+}
+
+.trace-step.unknown .duration-line,
+.trace-step.unknown .completion-mark {
+  color: var(--unknown);
+  fill: var(--unknown);
+  stroke: var(--unknown);
+}
+
+.trace-step.crash .duration-line,
+.trace-step.crash .completion-mark {
+  color: var(--destructive);
+  fill: var(--destructive);
+  stroke: var(--destructive);
+}
+
+.trace-step.recovered .duration-line,
+.trace-step.recovered .completion-mark {
+  color: var(--recovered);
+  fill: var(--recovered);
+  stroke: var(--recovered);
+}
+
+.trace-step .selection-halo {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.trace-step.selected .selection-halo,
+.trace-step:focus .selection-halo {
+  stroke: var(--selected);
+}
+
+.trace-step:focus .selection-halo {
+  stroke-width: 4;
+}
+
+.selection-band {
+  fill: var(--selection-fill);
+  stroke: var(--selected);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: auto minmax(8rem, 1fr) auto;
+  align-items: end;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--muted);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.range-control {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.range-control label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--selected);
+}
+
+.selected-detail {
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  background: color-mix(in oklch, var(--muted) 52%, transparent);
+}
+
+.detail-context {
+  box-sizing: border-box;
+  block-size: clamp(8rem, 20vh, 12rem);
+  block-size: clamp(8rem, 20svh, 12rem);
+  margin-bottom: 0.45rem;
+  padding-inline-end: 0.25rem;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.detail-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.detail-title strong {
+  font-weight: 500;
+}
+
+.outcome {
+  display: inline-block;
+  padding: 0.1rem 0.42rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.outcome.success {
+  color: var(--accepted);
+}
+
+.outcome.rejected {
+  color: var(--rejected);
+}
+
+.outcome.uncertain {
+  color: var(--uncertain);
+}
+
+.outcome.unknown {
+  color: var(--unknown);
+}
+
+.outcome.crash {
+  color: var(--destructive);
+}
+
+.outcome.recovered {
+  color: var(--recovered);
+}
+
+.detail-description,
+.detail-summary {
+  margin-bottom: 0.3rem;
+  overflow-wrap: anywhere;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin-bottom: 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+pre {
+  margin: 0;
+  color: var(--foreground);
+  font: 0.78rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.json-dump {
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: clamp(12rem, 32vh, 22rem);
+  block-size: clamp(12rem, 32svh, 22rem);
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  overflow: auto;
+  background: var(--code-background);
+  box-shadow: inset 3px 0 var(--selected);
+  scrollbar-gutter: stable;
+  tab-size: 2;
+}
+
+.json-key {
+  color: var(--syntax-key);
+  font-weight: 600;
+}
+
+.json-string {
+  color: var(--syntax-string);
+}
+
+.json-number {
+  color: var(--syntax-number);
+}
+
+.json-boolean {
+  color: var(--syntax-boolean);
+  font-weight: 600;
+}
+
+.json-null {
+  color: var(--syntax-null);
+  font-style: italic;
+}
+
+.json-dump::selection,
+.json-dump ::selection {
+  color: var(--background);
+  background: var(--selected);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding-inline: 0.7rem;
+  }
+
+  .stepper {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .range-control {
+    grid-row: 1;
+    grid-column: 1 / -1;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .json-dump {
+    block-size: clamp(10rem, 38vh, 18rem);
+    block-size: clamp(10rem, 38svh, 18rem);
+  }
+
+  .detail-context {
+    block-size: clamp(9rem, 24vh, 13rem);
+    block-size: clamp(9rem, 24svh, 13rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+:root {
+  --variant-1: light-dark(#1766a1, #7cbdf0);
+  --variant-2: light-dark(#a44512, #f3ae7b);
+  --variant-3: light-dark(#00745d, #6ad8b8);
+  --variant-4: light-dark(#8945ad, #d1a1ed);
+  --variant-5: light-dark(#a33058, #f199b6);
+  --variant-6: light-dark(#686216, #d4ce72);
+}
+main {
+  width: min(100%, 1440px);
+}
+section,
+#scatter-section {
+  margin-block: 1.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.look-for {
+  border-left: 3px solid var(--variant-1);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.experiment-prose {
+  max-width: 92ch;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.experiment-prose li + li {
+  margin-top: .6rem;
+}
+.controls,
+.run-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1rem;
+  margin-block: .65rem;
+}
+.controls label,
+.run-row label {
+  display: inline-flex;
+  gap: .4rem;
+  align-items: center;
+}
+input[type="number"] {
+  width: 8rem;
+}
+input,
+select,
+button {
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: .35rem;
+  font: inherit;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--variant-1);
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: .6;
+}
+:focus-visible {
+  outline: 3px solid var(--selected);
+  outline-offset: 3px;
+}
+summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+svg {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+svg text {
+  fill: var(--muted-foreground);
+  font-size: 11px;
+}
+svg .plot-label {
+  fill: var(--foreground);
+}
+.chart-grid {
+  stroke: var(--border);
+  stroke-width: .5;
+}
+.chart-readout {
+  min-height: 2.3em;
+  font-size: .8rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.crosshair {
+  stroke: var(--foreground);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+  pointer-events: none;
+}
+#bands {
+  touch-action: none;
+  cursor: crosshair;
+}
+.brush-selection {
+  fill: var(--selection-fill);
+  stroke: var(--selected);
+}
+.run-swatch {
+  width: 2.2rem;
+  height: .7rem;
+}
+.run-row {
+  padding-block: .25rem;
+  border-bottom: 1px solid var(--border);
+}
+.run-row code {
+  font-size: .8rem;
+  overflow-wrap: anywhere;
+}
+.table-scroll {
+  overflow: auto;
+  max-height: 36rem;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .8rem;
+  font-variant-numeric: tabular-nums;
+}
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: .5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+th {
+  position: sticky;
+  top: 0;
+  background: var(--background);
+}
+.canvas-scroll {
+  position: relative;
+  max-height: 32rem;
+  overflow: auto;
+}
+#scatter-section {
+  position: relative;
+}
+.canvas-crosshair {
+  position: absolute;
+  width: 0;
+  border-left: 1px dashed var(--foreground);
+  pointer-events: none;
+}
+canvas {
+  display: block;
+  width: 100%;
+}
+#tooltip {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  padding: .6rem .75rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  box-shadow: 0 3px 14px #0002;
+  max-width: min(28rem, calc(100vw - 24px));
+  font-size: .8rem;
+  white-space: pre-line;
+}
+#topology .partition-link {
+  transition: x1 80ms, x2 80ms;
+}
+#topology rect {
+  stroke: var(--border);
+}
+.broker-heading {
+  margin: 1rem 0 .3rem;
+  font-size: .95rem;
+  font-weight: 500;
+}
+.time-controls {
+  background: var(--background);
+}
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
+}
+.comparison-grid article {
+  min-width: 0;
+}
+.comparison-status {
+  border-left: 3px solid var(--variant-3);
+  padding: .5rem .8rem;
+  background: var(--muted);
+}
+.comparison-gap {
+  border-color: var(--variant-4);
+  font-weight: 600;
+}
+#comparison-pair {
+  max-width: 100%;
+}
+.stepper label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+#step-range {
+  flex: 1;
+  min-width: 8rem;
+}
+@media (max-width: 600px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: .6rem;
+  }
+  .run-row {
+    gap: .45rem;
+  }
+  .controls {
+    align-items: start;
+  }
+  .caption {
+    line-height: 1.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #topology .partition-link {
+    transition: none;
+  }
+}
+</style><main><p class="eyebrow">Deterministic producer experiments</p><h1>Java vs native producer</h1><p>Choose a matched pair to overlay delivery, admission, latency, outstanding work and broker traffic on a shared simulation clock.</p><p>All values below are <strong>classic Java / native</strong>. Common adjusts unsupported controls; original preserves the original manifest. Closed-loop counts can differ because deliveries feed the source. P99 includes acknowledged records only.</p><p>2 matched pairs, each replay verified. Fault-exposure gaps and semantic limits remain visible on every detail page.</p><h2>Full-size comparisons</h2><div class="table-scroll"><table><thead><tr><th>Scenario</th><th>Variant</th><th>Size</th><th>Profile</th><th>Acknowledged</th><th>Refused</th><th>P99 (ms)</th><th>Comparison</th></tr></thead><tbody><tr><td><a href="soft.degrading-broker-ramp--full--1.html#pair=0">soft.degrading-broker-ramp</a></td><td>request200ms</td><td>full</td><td>common</td><td>57,712 / 42,084</td><td>0 / 0</td><td>295.491 / 175.000</td><td>checked</td></tr><tr><td><a href="soft.slow-broker-window--full--1.html#pair=0">soft.slow-broker-window</a></td><td>lanes1-i5</td><td>full</td><td>common</td><td>59,901 / 35,011</td><td>0 / 0</td><td>12.410 / 27.000</td><td>checked</td></tr></tbody></table></div></main></html>
