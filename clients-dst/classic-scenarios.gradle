@@ -1,0 +1,44 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+// Experimental JDK 25 / Panama scenario runner, separate from Java 17 test sources.
+sourceSets {
+  classicScenarios {
+    compileClasspath += sourceSets.test.output + configurations.testRuntimeClasspath
+    runtimeClasspath += output + compileClasspath
+  }
+}
+configurations.classicScenariosImplementation.extendsFrom(configurations.testImplementation)
+dependencies {
+  classicScenariosImplementation libs.jacksonDatabind
+}
+tasks.named('compileClassicScenariosJava', JavaCompile) {
+  dependsOn testClasses
+  options.release = 25
+}
+tasks.register('classicScenarios', JavaExec) {
+  dependsOn classicScenariosClasses
+  classpath = sourceSets.classicScenarios.runtimeClasspath
+  mainClass = 'org.apache.kafka.clients.dst.compat.SharedScenarioRunner'
+  jvmArgs '--enable-native-access=ALL-UNNAMED'
+  maxHeapSize = '3g'
+  if (System.getProperty('kr.sim.library') != null)
+    systemProperty 'kr.sim.library', System.getProperty('kr.sim.library')
+  if (providers.gradleProperty('scenarioArgsJson').isPresent())
+    args new groovy.json.JsonSlurper().parseText(providers.gradleProperty('scenarioArgsJson').get())
+  else
+    args providers.gradleProperty('scenarioArgs').getOrElse('').split(' ').findAll { !it.isEmpty() }
+}

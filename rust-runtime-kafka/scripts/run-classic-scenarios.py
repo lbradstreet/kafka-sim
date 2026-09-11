@@ -26,7 +26,8 @@ def repository(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--kafka", type=Path, required=True, help="Kafka checkout containing the classicScenarios task")
+    parser.add_argument("--kafka", type=Path, default=ROOT.parent,
+                        help="Kafka checkout containing clients-dst:classicScenarios (default: this repository)")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--size", choices=["test", "full"], default="test")
     parser.add_argument("--profile", choices=["original", "common", "both"], default="both")
@@ -76,7 +77,7 @@ def main():
                        "--scenario", args.scenario, "--variant", args.variant,
                        "--seed", args.seed, "--out", str(out)]
             log = out / f"gradle-{adapter}-{profile}-{args.size}.log"
-            command = ["./gradlew", ":clients-lab:classicScenarios", "--offline", "--console=plain",
+            command = ["./gradlew", ":clients-dst:classicScenarios", "--offline", "--console=plain",
                        f"-Dkr.sim.library={library}", "-PscenarioArgsJson=" + json.dumps(options)]
             print(f"Running {adapter}/{profile}/{args.size}; {log}", flush=True)
             with log.open("w") as output:

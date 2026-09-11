@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay current Rust under both batching policies with the frozen Panama driver."""
+"""Replay current Rust under both batching policies with the in-repository Java driver."""
 import argparse
 from collections import defaultdict
 import ctypes
@@ -58,7 +58,8 @@ def verify_job(directory, scenario, variants, profile, seed, mode, field='batch_
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--kafka', type=Path, required=True)
+    parser.add_argument('--kafka', type=Path, default=ROOT.parent,
+                        help='Kafka checkout with the clients-dst comparison driver (default: this repository)')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--seeds', nargs='+', default=['0'])
     parser.add_argument('--scenario', default='.*')

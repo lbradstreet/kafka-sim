@@ -96,28 +96,26 @@ the browser automation URL policy rejected the local-file preview in this sessio
 ## Run
 
 Requirements: the Rust workspace toolchain, JDK 25 on `JAVA_HOME`/`PATH`, Python
-3.11+, and the Kafka checkout containing `:clients-lab:classicScenarios`. The
+3.11+, and this Kafka checkout containing `:clients-dst:classicScenarios`. The
 orchestrator uses the existing Gradle dependency cache with `--offline`.
 
 From this workspace:
 
 ```sh
 python3 -B scripts/run-classic-scenarios.py \
-  --kafka "$HOME/code/worktrees/kafka-classic-scenarios" \
   --out target/classic-scenarios/test
 ```
 
 The default runs both adapters and both profiles, replays every run, and checks
-each classic/native pair. `--kafka` may point to any checkout with the companion
-Kafka change. It was implemented in a worktree on
-`codex/classic-producer-scenarios` because the original Kafka checkout contains
-unrelated work.
+each classic/native pair. The Java producer and the test-only comparison driver
+come from this repository. `--kafka` can select another checkout containing the
+same `clients-dst:classicScenarios` task; the selected revision is recorded in
+the run provenance.
 
 Select a scenario/variant with Java regular expressions (whole-string matches):
 
 ```sh
 python3 -B scripts/run-classic-scenarios.py \
-  --kafka "$HOME/code/worktrees/kafka-classic-scenarios" \
   --out target/classic-scenarios/full \
   --size full --profile original \
   --scenario 'baseline.open-loop-rate' --variant 'rate32000' --seed 0
@@ -232,7 +230,7 @@ These identify the source state at invocation. They do not reconstruct uncommitt
 source, so commit code before archiving a long-lived result.
 
 For the complete Full matrix on a bounded disk, use
-`scripts/run-classic-matrix.py --kafka <checkout> --out <fresh-directory>`.
+`scripts/run-classic-matrix.py --out <fresh-directory>`.
 It runs all catalogue families under both adapters and both profiles, records
 each job in `matrix.json`, and resumes completed jobs without rerunning them.
 After a job exits, it compresses streamed first/replay/failure artifacts with

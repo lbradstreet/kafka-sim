@@ -24,7 +24,8 @@ def digest(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--kafka', type=Path, required=True)
+    parser.add_argument('--kafka', type=Path, default=ROOT.parent,
+                        help='Kafka checkout with the clients-dst comparison driver (default: this repository)')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--seed', default='0')
     parser.add_argument('--scenario', default='.*')

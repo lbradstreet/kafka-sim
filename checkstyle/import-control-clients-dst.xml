@@ -21,7 +21,9 @@
 <import-control pkg="org.apache.kafka">
     <allow pkg="java" />
     <allow pkg="org.junit" />
+    <allow pkg="org.mockito" />
     <allow pkg="io.netty" />
+    <allow pkg="com.fasterxml.jackson" />
     <allow pkg="org.apache.kafka.clients" />
     <allow pkg="org.apache.kafka.common" />
     <allow pkg="org.apache.kafka.test" />

@@ -2377,9 +2377,12 @@ project(':clients-dst') {
     testImplementation libs.nettyBuffer
     testImplementation libs.nettyTransport
     testImplementation libs.junitJupiter
+    testImplementation libs.mockitoCore
     testImplementation testLog4j2Libs
     testRuntimeOnly runtimeTestLibs
   }
+
+  apply from: 'classic-scenarios.gradle'
 
   checkstyle {
     configProperties = checkstyleConfigProperties("import-control-clients-dst.xml")

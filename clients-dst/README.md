@@ -62,6 +62,28 @@ those broker APIs. Blocking `Future.get()` before completion or `flush()` can de
 the single simulation thread; scenarios drive the scheduler before observing futures.
 The factory currently uses the full-buffer accumulator strategy.
 
+## Java and Rust comparison campaigns
+
+The `classicScenarios` source set contains the JDK 25 foreign-function bridge,
+shared workload driver, and selector used to compare this checkout's Java
+producer with the Rust producer. Both adapters use the Rust simulated broker,
+network, workload definitions, and virtual clock. The driver verifies complete
+terminal populations and broker-log invariants, then repeats every execution
+and requires an identical replay.
+
+With JDK 25 on `JAVA_HOME` and `PATH`, run from `rust-runtime-kafka`:
+
+```shell
+python3 -B scripts/run-classic-scenarios.py --out target/classic-scenarios/test
+python3 -B scripts/run-classic-matrix.py --out target/classic-scenarios/full-review
+```
+
+The scripts default to this repository's `:clients-dst:classicScenarios` task.
+The ordinary producer simulator tests remain Java 17 sources. Compression
+levels in scenario configurations are applied to the actual Java accumulator.
+See [the comparison guide](../rust-runtime-kafka/kafka/kr-kafka-experiments/CLASSIC_COMPARISON.md)
+for profiles, exact replay, bounded evidence archiving, and HTML exports.
+
 The simulated cluster shares logical partition logs. It does not model replica storage
 divergence, OS socket scheduling or crash durability.
 

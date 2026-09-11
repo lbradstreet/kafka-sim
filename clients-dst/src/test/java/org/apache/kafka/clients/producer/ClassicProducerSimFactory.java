@@ -30,7 +30,9 @@ import org.apache.kafka.clients.producer.internals.RecordAccumulator;
 import org.apache.kafka.clients.producer.internals.SeededRecordAccumulator;
 import org.apache.kafka.clients.producer.internals.Sender;
 import org.apache.kafka.clients.producer.internals.TransactionManager;
+import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.Node;
 import org.apache.kafka.common.compress.Compression;
 import org.apache.kafka.common.internals.ClusterResourceListeners;
 import org.apache.kafka.common.metrics.MetricConfig;
@@ -45,6 +47,10 @@ import org.apache.kafka.common.utils.internals.LogContext;
 
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,6 +93,24 @@ public final class ClassicProducerSimFactory {
             config.getLong(ProducerConfig.METADATA_MAX_AGE_CONFIG),
             config.getLong(ProducerConfig.METADATA_MAX_IDLE_CONFIG),
             logContext, new ClusterResourceListeners()) {
+            private final Random topologyRandom = new Random(seed ^ 0x544F504F4CL);
+            private Cluster previous;
+
+            @Override
+            public Cluster fetch() {
+                Cluster cluster = super.fetch();
+                if (cluster != previous) {
+                    // Cluster shuffles nodes with a process-global RNG. The simulation owner
+                    // selects a seeded order before publishing each snapshot to the client.
+                    List<Node> nodes = new ArrayList<>(cluster.nodes());
+                    nodes.sort(Comparator.comparingInt(Node::id));
+                    Collections.shuffle(nodes, topologyRandom);
+                    writeField(cluster, "nodes", Collections.unmodifiableList(nodes));
+                    previous = cluster;
+                }
+                return cluster;
+            }
+
             @Override
             public synchronized void awaitUpdate(int lastVersion, Timer timer) throws InterruptedException {
                 // The production wait parks a thread. Let the injected clock drive the sender
@@ -127,8 +151,13 @@ public final class ClassicProducerSimFactory {
         int requestTimeoutMs = config.getInt(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG);
         int deliveryTimeoutMs = Math.max(config.getInt(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG),
             lingerMs + requestTimeoutMs);
-        Compression compression = Compression.of(
-            CompressionType.forName(config.getString(ProducerConfig.COMPRESSION_TYPE_CONFIG))).build();
+        CompressionType compressionType = CompressionType.forName(config.getString(ProducerConfig.COMPRESSION_TYPE_CONFIG));
+        Compression compression = switch (compressionType) {
+            case ZSTD -> Compression.zstd().level(config.getInt(ProducerConfig.COMPRESSION_ZSTD_LEVEL_CONFIG)).build();
+            case GZIP -> Compression.gzip().level(config.getInt(ProducerConfig.COMPRESSION_GZIP_LEVEL_CONFIG)).build();
+            case LZ4 -> Compression.lz4().level(config.getInt(ProducerConfig.COMPRESSION_LZ4_LEVEL_CONFIG)).build();
+            default -> Compression.of(compressionType).build();
+        };
         RecordAccumulator.PartitionerConfig partitionerConfig = new RecordAccumulator.PartitionerConfig(
             config.getBoolean(ProducerConfig.PARTITIONER_ADAPTIVE_PARTITIONING_ENABLE_CONFIG),
             config.getLong(ProducerConfig.PARTITIONER_AVAILABILITY_TIMEOUT_MS_CONFIG),
@@ -142,6 +171,9 @@ public final class ClassicProducerSimFactory {
                 time, metricGroup),
             partitionRandom);
         seedBackoff(accumulator, "retryBackoff", jitterRandom);
+        // ProducerBatch has identity hash codes. Select one stable legal order for
+        // otherwise unordered forced-close callbacks in the single-owner simulation.
+        writeField(readField(accumulator, "incomplete"), "incomplete", new LinkedHashSet<>());
 
         int maxInFlight = config.getInt(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION);
         ProducerMetrics metricsRegistry = new ProducerMetrics(metrics);
