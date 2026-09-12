@@ -1,5 +1,7 @@
 # Kafka producer simulation: Java and Rust
 
+## View the sim comparisons: after cloning `dst-client`, open `rust-runtime-kafka/reports/classic-full/index.html` in your browser.
+
 The `dst-client` branch is a working laboratory for understanding and improving
 Kafka producer behavior. It brings the existing Java `KafkaProducer` into
 deterministic simulation, develops a Rust producer on a runtime designed for
