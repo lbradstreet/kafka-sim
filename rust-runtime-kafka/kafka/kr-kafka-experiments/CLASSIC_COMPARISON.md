@@ -14,8 +14,14 @@ recording are test infrastructure costs.
 
 ## View Java and native differences
 
-Generate a new matched run before exporting comparisons; historical galleries
-and campaign measurements are excluded from this import.
+The regenerated [campaign results](../../reports/CAMPAIGN_RESULTS.md) and
+[Full comparison tables](../../reports/summaries/COMPRESSION_BATCHING_VARIANTS.md)
+are checked in and readable on GitHub. Open the
+[HTML report index](../../reports/index.html) from a local checkout to use the
+interactive viewers; GitHub displays their source. See the
+[branch overview](../../../README.md) for the Java and Rust design goals.
+
+To produce a new comparison, generate a fresh matched run before exporting it.
 
 The repository's `producer-experiment.html` explorer now accepts a paired
 presentation artifact as well as ordinary native experiment reports. Export the

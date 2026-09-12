@@ -17,6 +17,9 @@
 
 # Deterministic simulation tests for the Java producer
 
+For the branch goals, Rust architecture and published behavior comparisons, start
+with the [repository overview](../README.md).
+
 This test-only module runs the existing `KafkaProducer`, `Sender`, accumulator and
 `NetworkClient` against a virtual clock, seeded network faults and in-memory brokers.
 It has no production sources and is not published.

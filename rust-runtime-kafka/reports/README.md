@@ -1,5 +1,8 @@
 # Generated simulation reports
 
+The [branch overview](../../README.md) explains the Java simulation harness,
+Rust runtime and producer design, and how to interpret these comparisons.
+
 Open [index.html](index.html) in a browser from a local checkout. These HTML
 exports include their scripts, styles and data, and work without a server.
 GitHub displays HTML source; download or check out the files to use the viewers.

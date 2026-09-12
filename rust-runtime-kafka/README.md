@@ -1,5 +1,9 @@
 # kr-runtime
 
+The [branch overview](../README.md) connects this runtime to the Java producer
+simulation harness, the [Rust Kafka producer](kafka/README.md), and the
+[published behavior comparisons](reports/CAMPAIGN_RESULTS.md).
+
 `kr-runtime` provides two concrete, single-owner executors for ordinary Rust
 futures. `SimRuntime` owns deterministic ordering and virtual time so a run can
 be inspected one scheduler action at a time and reproduced from the same
