@@ -4,8 +4,9 @@ Open [index.html](index.html) in a browser from a local checkout. These HTML
 exports include their scripts, styles and data, and work without a server.
 GitHub displays HTML source; download or check out the files to use the viewers.
 
-The snapshot contains the native Full catalogue (146 runs), classic Java/native
-Test and Full catalogues (292 matched pairs each), additional-seed classic
+The snapshot was regenerated from source revision `b65bafb3fc`, using the Java
+producer on this branch. It contains the native Full catalogue (146 runs),
+classic Java/native Test and Full catalogues (292 matched pairs each), additional-seed classic
 followups, the 324-pair request-grouping dashboard, and seed-0 admission pages.
 [Complete campaign results](CAMPAIGN_RESULTS.md) summarize all 2,440 comparison
 executions and the 204-run admission trial. Individual runs replayed successfully;
@@ -25,7 +26,7 @@ Export the completed native Full runs:
 
 ```sh
 RUSTC_WRAPPER= cargo run --release -p kr-kafka-experiments --bin kafka-experiments -- \
-  --export-html target/experiments/full-html --out target/experiments/full-suite
+  --export-html target/experiments/full-html --out target/experiments/admission-trial/regression-full
 ```
 
 Export completed classic Test runs:
